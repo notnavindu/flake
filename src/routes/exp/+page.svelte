@@ -1,7 +1,7 @@
 <script lang="ts">
 	let video: HTMLVideoElement;
 	let output: HTMLVideoElement;
-	let audioContainer: HTMLSourceElement;
+	let audioContainer: HTMLAudioElement;
 
 	let recorder: MediaRecorder;
 	let audioRecorder: MediaRecorder;
@@ -52,8 +52,6 @@
 				let url = URL.createObjectURL(blobData);
 				console.log(url);
 				audioContainer.src = url;
-
-				document.getElementById('test').href = url;
 			};
 
 			recorder.start();
@@ -85,6 +83,4 @@
 
 	audio
 	<audio bind:this={audioContainer} controls autoplay />
-
-	<a id="test" href="">DOANLOWASD</a>
 </main>
