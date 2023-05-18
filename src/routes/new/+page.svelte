@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GrantPermissions from '$lib/components/Microphone/GrantPermissions.svelte';
 	import MicrophoneDisable from '$lib/components/Microphone/MicrophoneDisable.svelte';
 	import MicrophoneSelect from '$lib/components/Microphone/MicrophoneSelect.svelte';
 	import { onMount } from 'svelte';
@@ -18,6 +19,8 @@
 
 	let data: Blob[] = [];
 	let audioData: Blob[] = [];
+
+	let micPermissions = false;
 
 	const startCapture = async () => {
 		let captureStream: MediaStream;
@@ -81,15 +84,19 @@
 
 	onMount(() => {
 		navigator.mediaDevices
+			.getUserMedia({ audio: true, video: false })
+			.then(() => (micPermissions = true));
+
+		navigator.mediaDevices
 			.enumerateDevices()
 			.then((devices) => {
 				devices.forEach((device) => {
-					if (device.kind === 'audioinput') {
+					if (device.kind === 'audioinput' && device.deviceId.length > 0) {
 						microphones = [...microphones, { label: device.label, id: device.deviceId }];
 					}
 				});
 
-				selectedMicrophoneId = microphones[0].id;
+				selectedMicrophoneId = 'disabled';
 			})
 			.catch(() => {
 				console.log('Error listing devices');
@@ -127,18 +134,22 @@
 			<div
 				class="w-full group rounded-xl aspect-video grid place-items-center bg-black bg-opacity-5 relative overflow-hidden"
 			>
-				<div class="z-10 w-full h-full p-5">
-					{#if microphones.length > 0}
-						Select Microphone
-						<div class="flex flex-wrap gap-1">
-							<div in:fade={{ delay: 0 }}>
-								<MicrophoneDisable
-									id={'disabled'}
-									selectedId={selectedMicrophoneId}
-									on:click={() => (selectedMicrophoneId = 'disabled')}
-								/>
-							</div>
+				<div class="z-10 w-full h-full p-5 group">
+					Select Microphone
+					<div class="flex flex-wrap gap-1">
+						<div in:fade={{ delay: 0 }}>
+							<MicrophoneDisable
+								id={'disabled'}
+								selectedId={selectedMicrophoneId}
+								on:click={() => (selectedMicrophoneId = 'disabled')}
+							/>
 
+							{#if !micPermissions}
+								<GrantPermissions />
+							{/if}
+						</div>
+
+						{#if microphones.length > 0}
 							{#each microphones as mic, i}
 								<div in:fade={{ delay: 200 * (i + 1) }}>
 									<MicrophoneSelect
@@ -149,10 +160,8 @@
 									/>
 								</div>
 							{/each}
-						</div>
-					{:else}
-						<div>No mics found</div>
-					{/if}
+						{/if}
+					</div>
 
 					<button class="bg-red-500 p-2" on:click={startCapture}>Start recording</button>
 				</div>
@@ -160,7 +169,7 @@
 				<!-- TODO: Store locally -->
 				<img
 					alt="static"
-					class="absolute w-full h-full blur-xl opacity-20 transform-gpu"
+					class="absolute w-full h-full blur-xl opacity-20 transform-gpu group-hover:opacity-5 transition-all duration-500"
 					src="https://i.pinimg.com/originals/bb/cb/17/bbcb17db81a9720520f4bd4d3271022f.gif"
 				/>
 			</div>

@@ -21,7 +21,7 @@
 
 <button
 	on:click
-	class="w-fit py-2 px-3 rounded-full text-xs relative overflow-hidden bg-white"
+	class="w-fit py-2 px-5 rounded-full relative text-sm overflow-hidden bg-white"
 	class:deselected={selectedId !== id}
 	class:selected={selectedId === id}
 >
