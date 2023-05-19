@@ -57,6 +57,7 @@ function listenForAuthChanges() {
 
 export let app: FirebaseApp;
 export let db: Firestore;
+
 export function initializeFirebase(options: FirebaseOptions) {
 	if (!browser) {
 		throw new Error("Can't use the Firebase client on the server.");

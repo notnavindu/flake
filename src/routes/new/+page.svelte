@@ -1,14 +1,26 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
 	import GrantPermissions from '$lib/components/Microphone/GrantPermissions.svelte';
 	import MicrophoneDisable from '$lib/components/Microphone/MicrophoneDisable.svelte';
 	import MicrophoneSelect from '$lib/components/Microphone/MicrophoneSelect.svelte';
+	import Icon from '@iconify/svelte';
+	import {
+		getDownloadURL,
+		getStorage,
+		ref,
+		uploadBytes,
+		uploadBytesResumable
+	} from 'firebase/storage';
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
+	import { v4 as uuidv4 } from 'uuid';
 
-	let state: 'initial' | 'recording' | 'uploading' | 'complete' = 'initial';
+	let id = uuidv4();
+	let state: 'initial' | 'recording' | 'recorded' | 'uploading' | 'complete' = 'initial';
 
 	let microphones: { label: string; id: string }[] = [];
-	let selectedMicrophoneId: string;
+	let selectedMicrophoneId: 'disabled' | string;
 
 	let video: HTMLVideoElement;
 	let output: HTMLVideoElement;
@@ -20,7 +32,10 @@
 	let data: Blob[] = [];
 	let audioData: Blob[] = [];
 
+	let finalBlob: Blob;
+
 	let micPermissions = false;
+	let mounted = false;
 
 	const startCapture = async () => {
 		let captureStream: MediaStream;
@@ -30,44 +45,57 @@
 			captureStream = await navigator.mediaDevices.getDisplayMedia();
 			video.srcObject = captureStream;
 
-			let audio = await navigator.mediaDevices.getUserMedia({
-				audio: true,
-				video: false
-			});
+			let audio: MediaStream | undefined;
+			let combinedStream: MediaStream;
 
-			let combinedStream = new MediaStream([
-				...captureStream.getVideoTracks(),
-				...audio.getAudioTracks()
-			]);
+			if (selectedMicrophoneId !== 'disabled') {
+				audio = await navigator.mediaDevices.getUserMedia({
+					audio: {
+						echoCancellation: true,
+						noiseSuppression: false,
+						deviceId: selectedMicrophoneId
+					},
+					video: false
+				});
+
+				combinedStream = new MediaStream([
+					...captureStream.getVideoTracks(),
+					...audio.getAudioTracks()
+				]);
+			} else {
+				combinedStream = new MediaStream([...captureStream.getVideoTracks()]);
+			}
 
 			recorder = new MediaRecorder(combinedStream);
-			audioRecorder = new MediaRecorder(audio);
 
 			recorder.ondataavailable = (e) => {
 				data.push(e.data);
 			};
 
-			audioRecorder.ondataavailable = (e) => {
-				audioData.push(e.data);
-			};
-
 			recorder.onstop = () => {
 				captureStream.getTracks().forEach((track) => track.stop());
-				let blobData = new Blob(data, { type: 'video/mp4' });
-				let url = URL.createObjectURL(blobData);
-				output.src = url;
-			};
 
-			audioRecorder.onstop = () => {
-				audio.getTracks().forEach((track) => track.stop());
-
-				let blobData = new Blob(audioData, { type: 'audio/wav' });
-				let url = URL.createObjectURL(blobData);
-				audioContainer.src = url;
+				finalBlob = new Blob(data, { type: 'video/mp4' });
+				output.src = URL.createObjectURL(finalBlob);
 			};
 
 			recorder.start();
-			audioRecorder.start();
+
+			if (selectedMicrophoneId !== 'disabled' && audio) {
+				audioRecorder = new MediaRecorder(audio);
+
+				audioRecorder.ondataavailable = (e) => audioData.push(e.data);
+
+				audioRecorder.onstop = () => {
+					audio!.getTracks().forEach((track) => track.stop());
+
+					let blobData = new Blob(audioData, { type: 'audio/wav' });
+
+					audioContainer.src = URL.createObjectURL(blobData);
+				};
+
+				audioRecorder.start();
+			}
 		} catch (err) {
 			state = 'initial';
 
@@ -79,10 +107,35 @@
 		if (recorder) recorder.stop();
 		if (audioRecorder) audioRecorder.stop();
 
-		state = 'uploading';
+		state = 'recorded';
+	};
+
+	const uploadFile = () => {
+		const storage = getStorage();
+		const storageRef = ref(storage, `flakes/${$page.data.userSession.uid}/${id}`);
+
+		const uploadTask = uploadBytesResumable(storageRef, finalBlob);
+
+		uploadTask.on(
+			'state_changed',
+			(snapshot) => {
+				const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				console.log('Upload is ' + progress + '% done');
+			},
+			(error) => {
+				console.log(error);
+			},
+			() => {
+				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					console.log('File available at', downloadURL);
+				});
+			}
+		);
 	};
 
 	onMount(() => {
+		mounted = true;
+
 		navigator.mediaDevices
 			.getUserMedia({ audio: true, video: false })
 			.then(() => (micPermissions = true));
@@ -96,46 +149,24 @@
 					}
 				});
 
-				selectedMicrophoneId = 'disabled';
+				selectedMicrophoneId = microphones[0].id;
 			})
 			.catch(() => {
 				console.log('Error listing devices');
 			});
-
-		console.log(microphones);
 	});
 </script>
 
-<!-- <main class="p-8">
-	<button on:click={startCapture}>Start recording</button>
-	<button
-		on:click={() => {
-			recorder.stop();
-			audioRecorder.stop();
-		}}>two</button
-	>
-
-	<div class="w-96 border">
-		<video bind:this={video} autoplay playsinline />
-	</div>
-
-	Output
-	<video bind:this={output} autoplay playsinline controls />
-
-	audio
-	<audio bind:this={audioContainer} controls autoplay />
-</main> -->
-
 <section class="w-full max-w-3xl m-auto pt-16 px-6">
-	<!-- <div class="text-4xl font-bold mb-4">New thing ❆</div> -->
+	<div class="text-4xl font-bold mb-4">New thing ❆</div>
 
 	<div class="mb-4">
 		{#if state === 'initial'}
 			<div
 				class="w-full group rounded-xl aspect-video grid place-items-center bg-black bg-opacity-5 relative overflow-hidden"
 			>
-				<div class="z-10 w-full h-full p-5 group">
-					Select Microphone
+				<div class="z-10 w-full h-full p-8 group flex flex-col">
+					<div class="text-black mb-2">Select Microphone</div>
 					<div class="flex flex-wrap gap-1">
 						<div in:fade={{ delay: 0 }}>
 							<MicrophoneDisable
@@ -163,7 +194,14 @@
 						{/if}
 					</div>
 
-					<button class="bg-red-500 p-2" on:click={startCapture}>Start recording</button>
+					{#if mounted}
+						<div class="mt-auto ml-auto" in:fly={{ y: 30 }}>
+							<RoundedButton on:click={startCapture} blackRed>
+								<Icon class="text-2xl" icon="la:snowflake" />
+								<div class="text-white">Start Recording</div>
+							</RoundedButton>
+						</div>
+					{/if}
 				</div>
 
 				<!-- TODO: Store locally -->
@@ -174,27 +212,31 @@
 				/>
 			</div>
 		{:else if state === 'recording'}
-			<div class="w-full aspect-video border">
+			<div class="w-full aspect-video border rounded-lg relative">
+				<div class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 absolute z-20">
+					<button class="bg-black text-white p-2 z-20" on:click={stopCapture}> Stop </button>
+
+					<!-- <button
+						class="bg-black text-white p-2"
+						on:click={cancelCap}
+					>
+						Cancel
+					</button> -->
+				</div>
+
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video bind:this={video} autoplay playsinline />
+				<video src="dd" class="z-0 relative" bind:this={video} autoplay playsinline />
 			</div>
-		{:else if state == 'complete'}
-			<div
-				class="w-full rounded-xl aspect-video grid place-items-center text-6xl bg-black bg-opacity-5"
-			>
-				❆ Done
+		{:else if state == 'recorded'}
+			<div class="w-full rounded-xl aspect-video overflow-hidden">
+				<!-- svelte-ignore a11y-media-has-caption -->
+				<video bind:this={output} autoplay playsinline controls />
+			</div>
+
+			<div class="w-full flex items-center justify-center mt-6 gap-3">
+				<RoundedButton on:click={uploadFile} blueWhite>Publish</RoundedButton>
+				<RoundedButton blueWhite>Discard</RoundedButton>
 			</div>
 		{/if}
 	</div>
-
-	<!-- Audio on or off, Transcribe on off, Summarize on off -->
-
-	<br />
-	<button class="bg-black text-white p-2" on:click={stopCapture}> Stop </button>
-
-	Output
-	<video bind:this={output} autoplay playsinline controls />
-
-	audio
-	<audio bind:this={audioContainer} controls autoplay />
 </section>
