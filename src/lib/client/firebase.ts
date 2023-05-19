@@ -44,9 +44,13 @@ function listenForAuthChanges() {
 		auth,
 		async (user) => {
 			if (user) {
+				console.log('HAS USER');
+
 				const token = await user.getIdToken();
 				await setToken(token);
 			} else {
+				console.log('NO AUTH USER');
+
 				await setToken('');
 			}
 			await invalidateAll();
@@ -59,6 +63,7 @@ export let app: FirebaseApp;
 export let db: Firestore;
 
 export function initializeFirebase(options: FirebaseOptions) {
+	console.log('staring');
 	if (!browser) {
 		throw new Error("Can't use the Firebase client on the server.");
 	}
@@ -66,11 +71,13 @@ export function initializeFirebase(options: FirebaseOptions) {
 		app = initializeApp(options);
 		db = getFirestore(app);
 		listenForAuthChanges();
+		console.log('loaded');
 	}
 }
 
 function getDbObject(document: Document): Partial<Document> {
 	const obj: AnyObject = {};
+	console.log(document._dbFields);
 	Object.keys(document)
 		.filter((k) => document._dbFields.includes(k))
 		.forEach((k) => {
@@ -80,6 +87,7 @@ function getDbObject(document: Document): Partial<Document> {
 }
 
 export async function saveDocument(document: Document) {
+	console.log(document);
 	const dbObject = getDbObject(document);
 	if (!document._collection) throw Error('Objects that extends Document must specify __collection');
 

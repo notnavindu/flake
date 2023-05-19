@@ -16,8 +16,11 @@
 </script>
 
 <div class="">
-	<main>
+	<header>
 		<Auth />
+	</header>
+
+	<main>
 		<slot />
 	</main>
 </div>

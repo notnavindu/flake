@@ -13,6 +13,7 @@
 		uploadBytesResumable
 	} from 'firebase/storage';
 	import { onMount } from 'svelte';
+	import { tweened } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -36,6 +37,7 @@
 
 	let micPermissions = false;
 	let mounted = false;
+	let uploadProgress = tweened(0);
 
 	const startCapture = async () => {
 		let captureStream: MediaStream;
@@ -119,8 +121,7 @@
 		uploadTask.on(
 			'state_changed',
 			(snapshot) => {
-				const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-				console.log('Upload is ' + progress + '% done');
+				uploadProgress.set((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
 			},
 			(error) => {
 				console.log(error);
@@ -163,10 +164,10 @@
 	<div class="mb-4">
 		{#if state === 'initial'}
 			<div
-				class="w-full group rounded-xl aspect-video grid place-items-center bg-black bg-opacity-5 relative overflow-hidden"
+				class="w-full rounded-xl aspect-video grid place-items-center bg-black bg-opacity-5 relative overflow-hidden border-2 border-white border-opacity-40"
 			>
-				<div class="z-10 w-full h-full p-8 group flex flex-col">
-					<div class="text-black mb-2">Select Microphone</div>
+				<div class="z-10 w-full h-full p-8 flex flex-col">
+					<div class="mb-2">Select Microphone</div>
 					<div class="flex flex-wrap gap-1">
 						<div in:fade={{ delay: 0 }}>
 							<MicrophoneDisable
@@ -195,19 +196,25 @@
 					</div>
 
 					{#if mounted}
-						<div class="mt-auto ml-auto" in:fly={{ y: 30 }}>
-							<RoundedButton on:click={startCapture} blackRed>
-								<Icon class="text-2xl" icon="la:snowflake" />
-								<div class="text-white">Start Recording</div>
+						<div class="mt-auto ml-auto" in:fly={{ y: 30, delay: 100 }}>
+							<RoundedButton on:click={startCapture} blackWhite>
+								<div class="w-full h-full flex gap-2 items-center">
+									<Icon
+										class="text-2xl text-red-600 transition-all group-hover:rotate-180 duration-700"
+										icon="la:snowflake"
+									/>
+									<div>Start Recording</div>
+								</div>
 							</RoundedButton>
 						</div>
 					{/if}
 				</div>
 
 				<!-- TODO: Store locally -->
+
 				<img
 					alt="static"
-					class="absolute w-full h-full blur-xl opacity-20 transform-gpu group-hover:opacity-5 transition-all duration-500"
+					class="absolute w-full h-full blur-xl opacity-20 transform-gpu"
 					src="https://i.pinimg.com/originals/bb/cb/17/bbcb17db81a9720520f4bd4d3271022f.gif"
 				/>
 			</div>

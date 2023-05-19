@@ -27,14 +27,14 @@
 >
 	<div class="z-10 relative">{label}</div>
 	<div
-		class="h-full absolute z-0 bg-black inset-0 rounded-full opacity-90"
+		class="h-full absolute z-0 bg-blue-500 inset-0 rounded-full opacity-90"
 		style:width="{$animation}%"
 	/>
 </button>
 
 <style lang="postcss">
 	.selected {
-		@apply text-white transition-all duration-500;
+		@apply text-white transition-all duration-500 bg-blue-500;
 	}
 
 	.deselected {

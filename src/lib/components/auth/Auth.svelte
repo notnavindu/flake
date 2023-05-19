@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { signInWith, signOut } from '$lib/client/firebase';
+	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
+	import Icon from '@iconify/svelte';
 </script>
 
 {#if $page.data.userSession}
-	<button class="bg-blue-600 p-2 text-white" on:click={() => signOut()}>Sign Out</button>
-	{$page.data.userSession.name} ({$page.data.userSession.email})
+	<RoundedButton on:click={() => signOut()} blackWhite>
+		<Icon icon="mdi:user" />
+		{$page.data.userSession.name.split(' ')[0]}
+	</RoundedButton>
 {:else}
-	<button class="bg-blue-600 p-2 text-white" on:click={() => signInWith('google')}>
-		Sign In with Google
-	</button>
-	(visitor)
+	<RoundedButton on:click={() => signInWith('google')} blueWhite>
+		<Icon icon="bx:log-in" />
+		Sign in
+	</RoundedButton>
 {/if}
