@@ -17,7 +17,8 @@ import {
 	signInWithRedirect,
 	signOut as _signOut,
 	GoogleAuthProvider,
-	onIdTokenChanged
+	onIdTokenChanged,
+	signInWithPopup
 } from 'firebase/auth';
 import type { Document } from '$lib/models/Document';
 import { readable } from 'svelte/store';
@@ -145,7 +146,10 @@ function providerFor(name: string) {
 export async function signInWith(name: string) {
 	const auth = getAuth(app);
 	const provider = providerFor(name);
-	await signInWithRedirect(auth, provider);
+
+	signInWithPopup(auth, provider).then((res) => {
+		console.log('Done zo', res);
+	});
 }
 
 export async function signOut() {

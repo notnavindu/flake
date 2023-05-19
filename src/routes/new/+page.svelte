@@ -158,7 +158,7 @@
 	});
 </script>
 
-<section class="w-full max-w-3xl m-auto pt-16 px-6">
+<section class="w-full max-w-3xl h-full m-auto flex flex-col justify-center">
 	<div class="text-4xl font-bold mb-4">New thing ❆</div>
 
 	<div class="mb-4">
