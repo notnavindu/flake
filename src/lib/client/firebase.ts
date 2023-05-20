@@ -25,6 +25,7 @@ import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { AnyObject } from '$lib/models/types';
 import { invalidateAll } from '$app/navigation';
+import { singInLoading } from '$lib/stores/loaders.store';
 
 async function setToken(token: string) {
 	const options = {
@@ -147,8 +148,10 @@ export async function signInWith(name: string) {
 	const auth = getAuth(app);
 	const provider = providerFor(name);
 
+	singInLoading.set(true);
+
 	signInWithPopup(auth, provider).then((res) => {
-		console.log('Done zo', res);
+		singInLoading.set(false);
 	});
 }
 

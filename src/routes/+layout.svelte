@@ -7,6 +7,14 @@
 	import { PUBLIC_FIREBASE_CLIENT_CONFIG } from '$env/static/public';
 	import Icon from '@iconify/svelte';
 
+	import '@fontsource/figtree/300.css';
+	import '@fontsource/figtree/400.css';
+	import '@fontsource/figtree/500.css';
+	import '@fontsource/figtree/600.css';
+	import '@fontsource/figtree/700.css';
+	import '@fontsource/figtree/800.css';
+	import '@fontsource/figtree/900.css';
+
 	if (browser) {
 		try {
 			initializeFirebase(JSON.parse(PUBLIC_FIREBASE_CLIENT_CONFIG));

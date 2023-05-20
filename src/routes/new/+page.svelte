@@ -79,6 +79,8 @@
 
 				finalBlob = new Blob(data, { type: 'video/mp4' });
 				output.src = URL.createObjectURL(finalBlob);
+
+				console.log('SZE: ', Math.floor(finalBlob.size / 1024), 'KB');
 			};
 
 			recorder.start();
@@ -92,8 +94,6 @@
 					audio!.getTracks().forEach((track) => track.stop());
 
 					let blobData = new Blob(audioData, { type: 'audio/wav' });
-
-					audioContainer.src = URL.createObjectURL(blobData);
 				};
 
 				audioRecorder.start();
