@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { uploadMedia } from '$lib/client/api';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
 	import GrantPermissions from '$lib/components/Microphone/GrantPermissions.svelte';
 	import MicrophoneDisable from '$lib/components/Microphone/MicrophoneDisable.svelte';
@@ -24,8 +25,7 @@
 	let selectedMicrophoneId: 'disabled' | string;
 
 	let video: HTMLVideoElement;
-	let output: HTMLVideoElement;
-	let audioContainer: HTMLAudioElement;
+	// let output: HTMLVideoElement;
 
 	let recorder: MediaRecorder;
 	let audioRecorder: MediaRecorder;
@@ -33,7 +33,9 @@
 	let data: Blob[] = [];
 	let audioData: Blob[] = [];
 
-	let finalBlob: Blob;
+	// outputs
+	let recordedVideoBlob: Blob;
+	let recordedVideoUrl: string;
 
 	let micPermissions = false;
 	let mounted = false;
@@ -77,10 +79,8 @@
 			recorder.onstop = () => {
 				captureStream.getTracks().forEach((track) => track.stop());
 
-				finalBlob = new Blob(data, { type: 'video/mp4' });
-				output.src = URL.createObjectURL(finalBlob);
-
-				console.log('SZE: ', Math.floor(finalBlob.size / 1024), 'KB');
+				recordedVideoBlob = new Blob(data, { type: 'video/mp4' });
+				recordedVideoUrl = URL.createObjectURL(recordedVideoBlob);
 			};
 
 			recorder.start();
@@ -94,6 +94,7 @@
 					audio!.getTracks().forEach((track) => track.stop());
 
 					let blobData = new Blob(audioData, { type: 'audio/wav' });
+					// to deepgram
 				};
 
 				audioRecorder.start();
@@ -112,26 +113,39 @@
 		state = 'recorded';
 	};
 
-	const uploadFile = () => {
+	const cancelCapture = () => {
+		if (recorder) recorder.stop();
+		if (audioRecorder) audioRecorder.stop();
+
+		data = [];
+		audioData = [];
+		state = 'initial';
+	};
+
+	const uploadFile = async () => {
 		const storage = getStorage();
 		const storageRef = ref(storage, `flakes/${$page.data.userSession.uid}/${id}`);
 
-		const uploadTask = uploadBytesResumable(storageRef, finalBlob);
+		console.log(recordedVideoBlob.size);
 
-		uploadTask.on(
-			'state_changed',
-			(snapshot) => {
-				uploadProgress.set((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-			},
-			(error) => {
-				console.log(error);
-			},
-			() => {
-				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-					console.log('File available at', downloadURL);
-				});
-			}
-		);
+		await uploadMedia(recordedVideoBlob, uploadProgress);
+
+		// const uploadTask = uploadBytesResumable(storageRef, recordedVideoBlob);
+
+		// uploadTask.on(
+		// 	'state_changed',
+		// 	(snapshot) => {
+		// 		uploadProgress.set((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+		// 	},
+		// 	(error) => {
+		// 		console.log(error);
+		// 	},
+		// 	() => {
+		// 		getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+		// 			console.log('File available at', downloadURL);
+		// 		});
+		// 	}
+		// );
 	};
 
 	onMount(() => {
@@ -151,6 +165,7 @@
 				});
 
 				selectedMicrophoneId = microphones[0].id;
+				console.log(microphones);
 			})
 			.catch(() => {
 				console.log('Error listing devices');
@@ -168,7 +183,7 @@
 			>
 				<div class="z-10 w-full h-full p-8 flex flex-col">
 					<div class="mb-2">Select Microphone</div>
-					<div class="flex flex-wrap gap-1">
+					<div class="flex flex-wrap gap-1 w-full">
 						<div in:fade={{ delay: 0 }}>
 							<MicrophoneDisable
 								id={'disabled'}
@@ -220,29 +235,46 @@
 			</div>
 		{:else if state === 'recording'}
 			<div class="w-full aspect-video border rounded-lg relative">
-				<div class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 absolute z-20">
-					<button class="bg-black text-white p-2 z-20" on:click={stopCapture}> Stop </button>
-
-					<!-- <button
-						class="bg-black text-white p-2"
-						on:click={cancelCap}
-					>
+				<div
+					class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 absolute z-20 flex items-center justify-center flex-col gap-3"
+				>
+					<RoundedButton class="text-xl px-8" blueWhite on:click={stopCapture}>
+						Finish Recording
+					</RoundedButton>
+					<RoundedButton class="text-base px-8" lightRed on:click={cancelCapture}>
 						Cancel
-					</button> -->
+					</RoundedButton>
 				</div>
 
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video src="dd" class="z-0 relative" bind:this={video} autoplay playsinline />
+				<video class="z-0 relative opacity-60" bind:this={video} autoplay playsinline />
 			</div>
 		{:else if state == 'recorded'}
-			<div class="w-full rounded-xl aspect-video overflow-hidden">
+			<div class="w-full rounded-xl aspect-video border-2 border-white border-opacity-50 relative">
+				<div class="absolute w-full h-full z-10 flex items-center justify-center">
+					<div
+						class="w-[200px] h-[200px] bg-black bg-opacity-5 rounded-2xl backdrop-blur-xl
+								flex items-center justify-center opacity-80"
+					>
+						<span class="text-7xl">{$uploadProgress.toFixed(0)}</span>
+						<sup class="mb-4 text-xl">%</sup>
+					</div>
+				</div>
+
 				<!-- svelte-ignore a11y-media-has-caption -->
-				<video bind:this={output} autoplay playsinline controls />
+				<video class="w-full relative z-0" src={recordedVideoUrl} autoplay playsinline controls />
 			</div>
 
 			<div class="w-full flex items-center justify-center mt-6 gap-3">
-				<RoundedButton on:click={uploadFile} blueWhite>Publish</RoundedButton>
-				<RoundedButton blueWhite>Discard</RoundedButton>
+				<RoundedButton class="text-xl px-8" on:click={uploadFile} blueWhite>
+					<Icon icon="mdi:tick" />
+					Publish
+				</RoundedButton>
+
+				<RoundedButton class="text-xl px-8" lightRed>
+					<Icon icon="mdi:bin-outline" />
+					Discard
+				</RoundedButton>
 			</div>
 		{/if}
 	</div>
