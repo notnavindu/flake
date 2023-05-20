@@ -19,7 +19,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 
 	let id = uuidv4();
-	let state: 'initial' | 'recording' | 'recorded' | 'uploading' | 'complete' = 'initial';
+	let state: 'initial' | 'recording' | 'recorded' | 'complete' = 'initial';
 
 	let microphones: { label: string; id: string }[] = [];
 	let selectedMicrophoneId: 'disabled' | string;
@@ -251,15 +251,17 @@
 			</div>
 		{:else if state == 'recorded'}
 			<div class="w-full rounded-xl aspect-video border-2 border-white border-opacity-50 relative">
-				<div class="absolute w-full h-full z-10 flex items-center justify-center">
-					<div
-						class="w-[200px] h-[200px] bg-black bg-opacity-5 rounded-2xl backdrop-blur-xl
-								flex items-center justify-center opacity-80"
-					>
-						<span class="text-7xl">{$uploadProgress.toFixed(0)}</span>
-						<sup class="mb-4 text-xl">%</sup>
+				{#if $uploadProgress > 0}
+					<div class="absolute w-full h-full z-10 flex items-center justify-center">
+						<div
+							class="w-[200px] h-[200px] bg-black bg-opacity-5 rounded-2xl backdrop-blur-xl
+								flex items-center justify-center"
+						>
+							<span class="text-7xl">{$uploadProgress.toFixed(0)}</span>
+							<sup class="mb-4 text-xl">%</sup>
+						</div>
 					</div>
-				</div>
+				{/if}
 
 				<!-- svelte-ignore a11y-media-has-caption -->
 				<video class="w-full relative z-0" src={recordedVideoUrl} autoplay playsinline controls />

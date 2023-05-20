@@ -10,19 +10,23 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	}
 	const uid = decodedToken.uid;
 
-	const file = (await request.formData()).get('media') as Blob;
+	const fileName = `/flakes/${uid}/`;
+	const rawFile = (await request.formData()).get('media') as Blob;
+	const buffer = Buffer.from(await rawFile.arrayBuffer());
 
-	console.log('TYPE: ', file.type);
+	// TODO: @Nav: check size
+	// console.log('size', rawFile.size / 1024 / 1024, 'MB');
 
-	const buffer = Buffer.from(await file.arrayBuffer());
+	const fileRef = getStorage().bucket('flake-async.appspot.com').file('this shit work pls pt 2');
 
-	const bucket = getStorage().bucket('flake-async.appspot.com').file('this shit work pls pt 2');
-	const test = await bucket.save(buffer, {
-		contentType: file.type,
-		public: true
+	console.log('starting upload');
+	await fileRef.save(buffer, {
+		contentType: rawFile.type,
+		public: true,
+		gzip: true
 	});
 
-	console.log(await bucket.getMetadata());
+	console.log(await fileRef.getMetadata());
 
 	return new Response(JSON.stringify({ a: 's' }));
 };

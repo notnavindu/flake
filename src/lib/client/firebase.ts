@@ -1,5 +1,4 @@
 import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
-import type { Firestore } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import {
 	collection,
@@ -10,7 +9,8 @@ import {
 	doc,
 	onSnapshot,
 	setDoc,
-	deleteDoc
+	deleteDoc,
+	type Firestore
 } from 'firebase/firestore';
 import {
 	getAuth,
@@ -144,6 +144,10 @@ function providerFor(name: string) {
 	}
 }
 
+// async function getOnboardingState = () => {
+// 	getDoc(doc(db, `users/${}`))
+// }
+
 export async function signInWith(name: string) {
 	const auth = getAuth(app);
 	const provider = providerFor(name);
@@ -152,6 +156,8 @@ export async function signInWith(name: string) {
 
 	signInWithPopup(auth, provider).then((res) => {
 		singInLoading.set(false);
+
+		console.log(res);
 	});
 }
 
