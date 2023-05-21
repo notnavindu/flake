@@ -1,6 +1,9 @@
 {
 	"name": "sveltekit-firebase-ssr",
 	"version": "0.0.1",
+	"engines": {
+		"node": ">=16.20.0"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
