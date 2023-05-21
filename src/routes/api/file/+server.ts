@@ -7,6 +7,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, credential, type ServiceAccount } from 'firebase-admin';
 
 export const POST: RequestHandler = async ({ request, cookies, url }) => {
+	console.time('file-upload');
 	const decodedToken = await decodeToken(cookies.get('token') || '');
 
 	if (!decodedToken) {
@@ -35,11 +36,11 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 
 	// TODO: @Nav: check size & mime type
 	const size = rawFile.size / 1024 / 1024;
-	console.log('size', size, 'MB');
+	console.log('size ==>', size, 'MB');
 
-	if (size > 30) {
-		throw error(400, 'Size cannot be larger than 30MB');
-	}
+	// if (size > 30) {
+	// 	throw error(400, 'Size cannot be larger than 30MB');
+	// }
 
 	const fileRef = userApp.storage().bucket().file(fileName);
 
@@ -60,10 +61,12 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 		createdAt: new Date(),
 		downloadUrl: metadata.mediaLink,
 		fileSize: metadata.size,
-		uploadedBy: uid
+		uploadedBy: uid,
+		name: dayjs().format('YYYY MMM D HHm[h]')
 	});
 
 	await userApp.delete();
+	console.timeEnd('file-upload');
 
 	return new Response(JSON.stringify({ id: docRef.id }));
 };

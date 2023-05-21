@@ -12,5 +12,5 @@ export async function load({ parent, url }) {
 		throw redirect(307, '/onboarding');
 
 	if (url.pathname.startsWith('/onboarding') && userSession.setupComplete)
-		throw redirect(307, '/new');
+		throw redirect(307, '/profile');
 }

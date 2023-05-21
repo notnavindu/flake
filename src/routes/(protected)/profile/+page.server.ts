@@ -21,17 +21,15 @@ export async function load({ params, cookies }) {
 
 	let userApp = initializeCustomFirebaseApp(serviceAccountParsed);
 
-	let doc = (await userApp.firestore().collection('flakes').doc(params.videoId).get()).data();
+	let data = (await userApp.firestore().collection('flakes').get()).docs.map((doc) => ({
+		...doc.data(),
+		createdAt: doc.data().createdAt.toDate()
+	}));
 	await userApp.delete();
 
-	if (!doc) throw error(404, 'Invalid Video Id');
+	if (!data) throw error(404, 'Invalid Video Id');
 
 	return {
-		data: {
-			id: doc.id,
-			downloadUrl: doc.downloadUrl,
-			name: doc.name,
-			uploadedBy: doc.uploadedBy
-		}
+		videos: data
 	};
 }

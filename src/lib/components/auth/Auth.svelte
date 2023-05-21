@@ -18,7 +18,7 @@
 	</button>
 
 	<div in:fly={{ x: 50 }}>
-		<RoundedButton on:click={() => signOut()} blackWhite>
+		<RoundedButton on:click={() => goto('/profile')} blackWhite>
 			{#if $singInLoading}
 				<!-- TODO: Use button's loading prop -->
 				<Icon class="animate-spin" icon="mingcute:loading-line" />

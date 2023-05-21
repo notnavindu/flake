@@ -146,7 +146,7 @@
 	});
 </script>
 
-<section class="w-full max-w-3xl h-full m-auto flex flex-col justify-center">
+<section class="w-full h-full flex flex-col justify-center">
 	<div class="text-4xl mb-4">New Flake</div>
 
 	<div class="mb-4">

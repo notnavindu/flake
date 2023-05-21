@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { invalidateAll } from '$app/navigation';
+import { goto, invalidateAll } from '$app/navigation';
 import type { Document } from '$lib/models/Document';
 import type { AnyObject } from '$lib/models/types';
 import { singInLoading } from '$lib/stores/loaders.store';
@@ -66,15 +66,12 @@ export async function refreshIdToken() {
 	await auth.currentUser?.getIdToken(true);
 
 	await invalidateAll();
-
-	console.log(auth.currentUser);
 }
 
 export let app: FirebaseApp;
 export let db: Firestore;
 
 export function initializeFirebase(options: FirebaseOptions) {
-	console.log('staring');
 	if (!browser) {
 		throw new Error("Can't use the Firebase client on the server.");
 	}
@@ -167,6 +164,8 @@ export async function signInWith(name: string) {
 		singInLoading.set(false);
 
 		console.log(res);
+
+		goto('/profile');
 	});
 }
 
