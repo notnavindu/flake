@@ -10,14 +10,13 @@ export let uploadMedia = async (image: any, progreeRef: Tweened<number> | null =
 		.post('/api/file', data, {
 			onUploadProgress: (progressEvent) => {
 				if (progreeRef && progressEvent.total) {
-					let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+					let percentCompleted = Math.round((progressEvent.loaded * 95) / progressEvent.total);
 					progreeRef.set(percentCompleted);
 				}
 			}
 		})
 		.then((res) => {
-			// / FIXME:
-			return res.data?.location;
+			return res.data?.id;
 		})
 		.catch((err) => {
 			return { error: err.response.status };

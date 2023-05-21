@@ -1,24 +1,15 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { uploadMedia } from '$lib/client/api';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
 	import GrantPermissions from '$lib/components/Microphone/GrantPermissions.svelte';
 	import MicrophoneDisable from '$lib/components/Microphone/MicrophoneDisable.svelte';
 	import MicrophoneSelect from '$lib/components/Microphone/MicrophoneSelect.svelte';
 	import Icon from '@iconify/svelte';
-	import {
-		getDownloadURL,
-		getStorage,
-		ref,
-		uploadBytes,
-		uploadBytesResumable
-	} from 'firebase/storage';
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
-	import { v4 as uuidv4 } from 'uuid';
 
-	let id = uuidv4();
 	let state: 'initial' | 'recording' | 'recorded' | 'complete' = 'initial';
 
 	let microphones: { label: string; id: string }[] = [];
@@ -123,29 +114,11 @@
 	};
 
 	const uploadFile = async () => {
-		const storage = getStorage();
-		const storageRef = ref(storage, `flakes/${$page.data.userSession.uid}/${id}`);
-
 		console.log(recordedVideoBlob.size);
+		const id = await uploadMedia(recordedVideoBlob, uploadProgress);
 
-		await uploadMedia(recordedVideoBlob, uploadProgress);
-
-		// const uploadTask = uploadBytesResumable(storageRef, recordedVideoBlob);
-
-		// uploadTask.on(
-		// 	'state_changed',
-		// 	(snapshot) => {
-		// 		uploadProgress.set((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-		// 	},
-		// 	(error) => {
-		// 		console.log(error);
-		// 	},
-		// 	() => {
-		// 		getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-		// 			console.log('File available at', downloadURL);
-		// 		});
-		// 	}
-		// );
+		uploadProgress.set(100);
+		goto(`/${id}`);
 	};
 
 	onMount(() => {
@@ -174,7 +147,7 @@
 </script>
 
 <section class="w-full max-w-3xl h-full m-auto flex flex-col justify-center">
-	<div class="text-4xl font-bold mb-4">New thing ❆</div>
+	<div class="text-4xl mb-4">New Flake</div>
 
 	<div class="mb-4">
 		{#if state === 'initial'}

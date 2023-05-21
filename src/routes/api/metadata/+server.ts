@@ -29,41 +29,7 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 		serviceAccountParsed.project_id
 	);
 
-	const fileName = `flakes/${uid}/${new Date().toISOString()}`;
-	const rawFile = (await request.formData()).get('media') as Blob;
-	const buffer = Buffer.from(await rawFile.arrayBuffer());
-
-	// TODO: @Nav: check size & mime type
-	const size = rawFile.size / 1024 / 1024;
-	console.log('size', size, 'MB');
-
-	if (size > 30) {
-		throw error(400, 'Size cannot be larger than 30MB');
-	}
-
-	const fileRef = userApp.storage().bucket().file(fileName);
-
-	await fileRef.save(buffer, {
-		contentType: rawFile.type,
-		public: true,
-		gzip: true
-	});
-
-	console.log(await fileRef.getMetadata());
-
-	const metadata = (await fileRef.getMetadata())[0];
-
-	const docRef = userApp.firestore().collection('flakes').doc();
-
-	await docRef.set({
-		id: docRef.id,
-		createdAt: new Date(),
-		downloadUrl: metadata.mediaLink,
-		fileSize: metadata.size,
-		uploadedBy: uid
-	});
-
 	await userApp.delete();
 
-	return new Response(JSON.stringify({ id: docRef.id }));
+	return new Response(JSON.stringify({ success: true }));
 };
