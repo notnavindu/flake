@@ -4,6 +4,8 @@ import type { RequestHandler } from './$types';
 import admin from 'firebase-admin';
 
 export const POST: RequestHandler = async ({ request, cookies, url }) => {
+	const mainApp = admin.app();
+
 	const decodedToken = await decodeToken(cookies.get('token') || '');
 	if (!decodedToken) {
 		throw error(401, 'Not logged in');
@@ -26,8 +28,21 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 		await app.firestore().collection('test').doc('test').delete();
 
 		await app.delete();
-	} catch (error) {
-		throw 'Invalid Service Account';
+
+		// TODO: Encrypt with AES
+		await Promise.all([
+			mainApp
+				.firestore()
+				.collection('service-accounts')
+				.doc(`${uid}`)
+				.set({
+					serviceAccount: JSON.stringify(serviceAccount)
+				}),
+
+			mainApp.auth().setCustomUserClaims(uid, { setupComplete: true })
+		]);
+	} catch (err) {
+		throw error(400, 'Invalid Service Account');
 	}
 
 	return new Response(JSON.stringify({ success: true }));

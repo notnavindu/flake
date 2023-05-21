@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { validateAndSaveServiceAccount } from '$lib/client/api';
+	import { refreshIdToken } from '$lib/client/firebase';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
 	import OnboardingStep from '$lib/components/onboarding/OnboardingStep.svelte';
 	import { serviceAccountKeys } from '$lib/constants/validator.const';
 	import Icon from '@iconify/svelte';
 
 	let step = 0;
+	let validatingServiceAccount = false;
 
 	// TODO: Save state to localstorage
 
@@ -27,6 +30,7 @@
 
 				reader.onload = async function (evt) {
 					try {
+						validatingServiceAccount = true;
 						serviceAccount = JSON.parse(evt?.target?.result as string);
 
 						const isValid = serviceAccountKeys.every((key) => serviceAccount[key]?.length > 0);
@@ -37,7 +41,16 @@
 						alert('error parsing json');
 					}
 
-					await validateAndSaveServiceAccount(serviceAccount);
+					const { success } = await validateAndSaveServiceAccount(serviceAccount);
+
+					if (success) {
+						alert('GG');
+						await refreshIdToken();
+						goto('/new');
+					} else {
+						alert('Service account validation failed');
+					}
+					validatingServiceAccount = false;
 				};
 				reader.onerror = function (evt) {
 					alert('Error reading file');
@@ -49,9 +62,17 @@
 	};
 </script>
 
-<div class="w-full h-full border pt-16 grid grid-cols-2">
-	<div>test</div>
-	<div class="p-5">
+<div class="w-full h-full pt-16 grid grid-cols-2">
+	<div class="flex items-center justify-center">
+		<Icon
+			width={364}
+			class="text-blue-400 transform transition-all duration-700"
+			style="transform: rotate({step * 60}deg); opacity: {20 + 17.5 * step}%"
+			icon="la:snowflake"
+		/>
+	</div>
+
+	<div class="p-5 flex flex-col justify-center">
 		<div class="text-3xl mb-8">Let's get you up to <br />speed with Flake</div>
 
 		<OnboardingStep bind:step idx={0} title="Create a Firebase Project">
@@ -130,7 +151,13 @@
 			To upload your serviceaccount.json file,
 			<br />
 
-			<RoundedButton class="mt-3" on:click={createFilePicker} blueWhite>Click Here</RoundedButton>
+			<RoundedButton
+				disabled={validatingServiceAccount}
+				loading={validatingServiceAccount}
+				class="mt-3"
+				on:click={createFilePicker}
+				blueWhite>Click Here</RoundedButton
+			>
 		</OnboardingStep>
 	</div>
 </div>

@@ -6,10 +6,13 @@ import type { Document } from '$lib/models/Document';
 function initializeFirebase() {
 	if (!admin.apps.length) {
 		const serviceAccount = JSON.parse(FIREBASE_SERVER_CONFIG);
-		admin.initializeApp({
+		return admin.initializeApp({
 			credential: admin.credential.cert(serviceAccount),
 			databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
 		});
+	} else {
+		console.log('+====>', admin.app().name);
+		return admin.app();
 	}
 }
 

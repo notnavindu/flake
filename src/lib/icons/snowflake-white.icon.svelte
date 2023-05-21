@@ -1,4 +1,8 @@
-<svg width="37" height="40" viewBox="0 0 37 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<script>
+	export let size = 38;
+</script>
+
+<svg width={size} height={size} viewBox="0 0 37 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 	<path
 		d="M36.5883 28.5002L34.8145 31.5726L1.01826 12.0603L2.7921 8.98791L36.5883 28.5002Z"
 		fill="white"

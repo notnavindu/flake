@@ -26,7 +26,6 @@ export let uploadMedia = async (image: any, progreeRef: Tweened<number> | null =
 
 export let validateAndSaveServiceAccount = async (account: object) => {
 	return await axios.post('/api/service-account', { account }).then(({ data }) => {
-		console.log('RES', data);
 		return data;
 	});
 };

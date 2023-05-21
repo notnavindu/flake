@@ -35,7 +35,7 @@
 			/> Flake
 		</div>
 
-		<div class="">
+		<div class="flex gap-2">
 			<Auth />
 		</div>
 	</header>

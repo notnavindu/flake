@@ -1,31 +1,30 @@
+import { browser } from '$app/environment';
+import { invalidateAll } from '$app/navigation';
+import type { Document } from '$lib/models/Document';
+import type { AnyObject } from '$lib/models/types';
+import { singInLoading } from '$lib/stores/loaders.store';
 import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
 import { initializeApp } from 'firebase/app';
 import {
-	collection,
-	getFirestore,
-	query,
-	where,
-	addDoc,
-	doc,
-	onSnapshot,
-	setDoc,
-	deleteDoc,
-	type Firestore
-} from 'firebase/firestore';
-import {
-	getAuth,
-	signInWithRedirect,
-	signOut as _signOut,
 	GoogleAuthProvider,
+	signOut as _signOut,
+	getAuth,
 	onIdTokenChanged,
 	signInWithPopup
 } from 'firebase/auth';
-import type { Document } from '$lib/models/Document';
+import {
+	addDoc,
+	collection,
+	deleteDoc,
+	doc,
+	getFirestore,
+	onSnapshot,
+	query,
+	setDoc,
+	where,
+	type Firestore
+} from 'firebase/firestore';
 import { readable } from 'svelte/store';
-import { browser } from '$app/environment';
-import type { AnyObject } from '$lib/models/types';
-import { invalidateAll } from '$app/navigation';
-import { singInLoading } from '$lib/stores/loaders.store';
 
 async function setToken(token: string) {
 	const options = {
@@ -59,6 +58,16 @@ function listenForAuthChanges() {
 		},
 		(err) => console.error(err.message)
 	);
+}
+
+export async function refreshIdToken() {
+	const auth = getAuth(app);
+
+	await auth.currentUser?.getIdToken(true);
+
+	await invalidateAll();
+
+	console.log(auth.currentUser);
 }
 
 export let app: FirebaseApp;
