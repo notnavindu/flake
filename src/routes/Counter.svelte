@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { Count } from '$lib/models/Count';
 	import { getDocumentStore, saveDocument } from '$lib/client/firebase';
 	import { spring } from 'svelte/motion';
@@ -116,4 +116,4 @@
 		top: -100%;
 		user-select: none;
 	}
-</style>
+</style> -->
