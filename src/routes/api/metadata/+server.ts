@@ -1,10 +1,11 @@
-// import { createDocument, getDocuments, decodeToken } from '$lib/server/firebase';
-// import { error } from '@sveltejs/kit';
-// import type { RequestHandler } from './$types';
-// import { getStorage } from 'firebase-admin/storage';
-// import dayjs from 'dayjs';
-// import { getFirestore } from 'firebase-admin/firestore';
-// import { initializeApp, credential, type ServiceAccount } from 'firebase-admin';
+import { createDocument, getDocuments, decodeToken } from '$lib/server/firebase';
+import { error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import admin from 'firebase-admin';
+import { getStorage } from 'firebase-admin/storage';
+import dayjs from 'dayjs';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, credential, type ServiceAccount } from 'firebase-admin';
 
 // export const POST: RequestHandler = async ({ request, cookies, url }) => {
 // 	const decodedToken = await decodeToken(cookies.get('token') || '');
@@ -33,3 +34,16 @@
 
 // 	return new Response(JSON.stringify({ success: true }));
 // };
+
+export const GET: RequestHandler = async ({ request, cookies, url }) => {
+	const decodedToken = await decodeToken(cookies.get('token') || '');
+
+	if (!decodedToken) {
+		throw error(401, 'Not logged in');
+	}
+	const uid = decodedToken.uid;
+
+	console.log(admin.apps[0]?.options);
+
+	return new Response(JSON.stringify({ success: true }));
+};

@@ -40,7 +40,7 @@
 		</div>
 	</header>
 
-	<main class="h-screen p-4 w-full max-w-3xl h-full m-auto">
+	<main class="h-screen p-4">
 		<slot />
 	</main>
 </div>

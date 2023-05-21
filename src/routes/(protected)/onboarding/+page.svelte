@@ -3,11 +3,12 @@
 	import { validateAndSaveServiceAccount } from '$lib/client/api';
 	import { refreshIdToken } from '$lib/client/firebase';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
+	import ConfigHint from '$lib/components/onboarding/ConfigHint.svelte';
 	import OnboardingStep from '$lib/components/onboarding/OnboardingStep.svelte';
 	import { serviceAccountKeys } from '$lib/constants/validator.const';
 	import Icon from '@iconify/svelte';
 
-	let step = 0;
+	let step = 1;
 	let validatingServiceAccount = false;
 
 	// TODO: Save state to localstorage
@@ -62,8 +63,8 @@
 	};
 </script>
 
-<div class="w-full h-full pt-16 grid grid-cols-2">
-	<div class="flex items-center justify-center">
+<div class="w-full h-full grid grid-cols-2">
+	<div class="flex items-center justify-center h-screen">
 		<Icon
 			width={364}
 			class="text-blue-400 transform transition-all duration-700"
@@ -72,8 +73,8 @@
 		/>
 	</div>
 
-	<div class="p-5 flex flex-col justify-center">
-		<div class="text-3xl mb-8">Let's get you up to <br />speed with Flake</div>
+	<div class="p-5 h-screen overflow-auto">
+		<div class="text-3xl mb-8 mt-16">Let's get you up to <br />speed with Flake</div>
 
 		<OnboardingStep bind:step idx={0} title="Create a Firebase Project">
 			Go to your <a
@@ -86,6 +87,34 @@
 			</a>
 			and Create a basic project with the default settings. You can name your project anything you like
 			<br /><br />
+
+			<RoundedButton greenBlack on:click={() => step++}>
+				<Icon icon="mdi:tick" />
+				Done
+			</RoundedButton>
+		</OnboardingStep>
+
+		<OnboardingStep bind:step idx={1} title="Register your app">
+			<p>
+				1. Follow <a
+					class="text-blue-500 underline font-bold"
+					target="_blank"
+					rel="noopener noreferrer"
+					href="https://firebase.google.com/docs/web/setup#register-app"
+				>
+					this guide
+				</a>
+				to register a new app for your project
+			</p>
+			<br />
+			<p>2. Copy and paste your client side configuration below</p>
+
+			<textarea
+				class="w-full bg-black border-2 border-zinc-500 text-white mt-4 rounded-md focus:outline-none p-3"
+				rows="5"
+			/>
+
+			<ConfigHint />
 
 			<RoundedButton greenBlack on:click={() => step++}>
 				<Icon icon="mdi:tick" />

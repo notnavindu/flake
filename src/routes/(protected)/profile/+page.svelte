@@ -8,16 +8,18 @@
 	console.log(data);
 </script>
 
-<div class="flex justify-between mt-20 items-center">
-	<div class="text-3xl">Hello, {data.userSession.name.split(' ')[0]}!</div>
+<div class="w-full max-w-3xl h-full m-auto">
+	<div class="flex justify-between mt-20 items-center">
+		<div class="text-3xl">Hello, {data.userSession.name.split(' ')[0]}!</div>
 
-	<button on:click={signOut}>
-		<Icon class="text-3xl" icon="uil:signout" />
-	</button>
+		<button on:click={signOut}>
+			<Icon class="text-3xl" icon="uil:signout" />
+		</button>
+	</div>
+
+	<div class="text-xl mt-8 opacity-75">Your Videos</div>
+
+	{#each data.videos as vid}
+		<!-- {vid.name} -->
+	{/each}
 </div>
-
-<div class="text-xl mt-8 opacity-75">Your Videos</div>
-
-{#each data.videos as vid}
-	{vid.name}
-{/each}

@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { goto, invalidateAll } from '$app/navigation';
 import type { Document } from '$lib/models/Document';
+import { FirebaseBase } from '$lib/models/FirebaseBase';
 import type { AnyObject } from '$lib/models/types';
 import { singInLoading } from '$lib/stores/loaders.store';
 import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
@@ -25,6 +26,11 @@ import {
 	type Firestore
 } from 'firebase/firestore';
 import { readable } from 'svelte/store';
+
+export let HostFirebase: FirebaseBase;
+
+export let app: FirebaseApp;
+export let db: Firestore;
 
 async function setToken(token: string) {
 	const options = {
@@ -68,77 +74,19 @@ export async function refreshIdToken() {
 	await invalidateAll();
 }
 
-export let app: FirebaseApp;
-export let db: Firestore;
-
 export function initializeFirebase(options: FirebaseOptions) {
 	if (!browser) {
 		throw new Error("Can't use the Firebase client on the server.");
 	}
 	if (!app) {
+		HostFirebase = new FirebaseBase(options);
+
+		// DEPRECATED
 		app = initializeApp(options);
 		db = getFirestore(app);
+
 		listenForAuthChanges();
-		console.log('loaded');
 	}
-}
-
-function getDbObject(document: Document): Partial<Document> {
-	const obj: AnyObject = {};
-	console.log(document._dbFields);
-	Object.keys(document)
-		.filter((k) => document._dbFields.includes(k))
-		.forEach((k) => {
-			obj[k] = document[k as keyof Document];
-		});
-	return obj;
-}
-
-export async function saveDocument(document: Document) {
-	console.log(document);
-	const dbObject = getDbObject(document);
-	if (!document._collection) throw Error('Objects that extends Document must specify __collection');
-
-	if (document._id) {
-		await setDoc(doc(db, document._collection, document._id), dbObject);
-	} else {
-		const todoRef = await addDoc(collection(db, document._collection), dbObject);
-		document._id = todoRef.id;
-	}
-}
-
-export function getDocumentStore<T extends Document>(
-	type: { new (data: AnyObject): T },
-	document: T,
-	onDeleted: () => void = () => undefined
-) {
-	return readable<T>(document, (set) => {
-		let dbUnsubscribe: () => void;
-		let unsubbed = false;
-		const unsub = () => {
-			unsubbed = true;
-			if (dbUnsubscribe) {
-				dbUnsubscribe();
-			}
-		};
-		if (browser) {
-			(async () => {
-				if (unsubbed) return;
-				dbUnsubscribe = onSnapshot(doc(db, document._collection, document._id), (doc) => {
-					if (doc.exists()) {
-						const newDoc = new type(doc.data());
-						newDoc._id = doc.id;
-						set(newDoc);
-					} else {
-						onDeleted();
-						dbUnsubscribe();
-					}
-				});
-			})();
-		}
-
-		return unsub;
-	});
 }
 
 function providerFor(name: string) {
@@ -149,10 +97,6 @@ function providerFor(name: string) {
 			throw 'unknown provider ' + name;
 	}
 }
-
-// async function getOnboardingState = () => {
-// 	getDoc(doc(db, `users/${}`))
-// }
 
 export async function signInWith(name: string) {
 	const auth = getAuth(app);
@@ -172,45 +116,4 @@ export async function signInWith(name: string) {
 export async function signOut() {
 	const auth = getAuth(app);
 	await _signOut(auth);
-}
-
-export async function deleteDocument(document: Document) {
-	if (!document._collection) throw Error('Objects that extends Document must specify __collection');
-
-	await deleteDoc(doc(db, document._collection, document._id));
-}
-
-export function getCollectionStore<T extends Document>(
-	type: { new (data: AnyObject): T },
-	collectionPath: string,
-	uid: string,
-	initialData: Array<T> = []
-) {
-	return readable<Array<T>>(initialData, (set) => {
-		let dbUnsubscribe: () => void;
-		let unsubbed = false;
-		const unsub = () => {
-			unsubbed = true;
-			if (dbUnsubscribe) {
-				dbUnsubscribe();
-			}
-		};
-		if (browser) {
-			(async () => {
-				if (unsubbed) return;
-				const q = query(collection(db, collectionPath), where('uid', '==', uid));
-				dbUnsubscribe = onSnapshot(q, (docs) => {
-					const newDocuments: Array<T> = [];
-					docs.forEach((doc) => {
-						const newDoc = new type(doc.data());
-						newDoc._id = doc.id;
-						newDocuments.push(newDoc);
-					});
-					set(newDocuments);
-				});
-			})();
-		}
-
-		return unsub;
-	});
 }
