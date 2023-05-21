@@ -1,10 +1,9 @@
-import { createDocument, getDocuments, decodeToken } from '$lib/server/firebase';
+import { decodeToken } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { getStorage } from 'firebase-admin/storage';
 import dayjs from 'dayjs';
+import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, credential, type ServiceAccount } from 'firebase-admin';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	console.time('file-upload');
@@ -21,9 +20,9 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 
 	const serviceAccountParsed = JSON.parse(serviceAccount);
 
-	const userApp = initializeApp(
+	const userApp = admin.initializeApp(
 		{
-			credential: credential.cert(serviceAccountParsed),
+			credential: admin.credential.cert(serviceAccountParsed),
 			databaseURL: `https://${serviceAccountParsed.project_id}.firebaseio.com`,
 			storageBucket: `${serviceAccountParsed.project_id}.appspot.com`
 		},
