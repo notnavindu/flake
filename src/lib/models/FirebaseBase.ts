@@ -1,14 +1,12 @@
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
-export class FirebaseBase {
+export class FirebaseClientBase {
 	#options: FirebaseOptions;
-	app: FirebaseApp;
-	firestore: Firestore;
+	public app;
 
 	constructor(options: FirebaseOptions) {
 		this.#options = options;
 		this.app = initializeApp(options);
-		this.firestore = getFirestore(this.app);
 	}
 }

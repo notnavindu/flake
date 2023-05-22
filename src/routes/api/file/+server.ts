@@ -49,8 +49,6 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 		gzip: true
 	});
 
-	console.log(await fileRef.getMetadata());
-
 	const metadata = (await fileRef.getMetadata())[0];
 
 	const docRef = userApp.firestore().collection('flakes').doc();
@@ -65,6 +63,7 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	});
 
 	await userApp.delete();
+
 	console.timeEnd('file-upload');
 
 	return new Response(JSON.stringify({ id: docRef.id }));

@@ -4,8 +4,6 @@
 	import Icon from '@iconify/svelte';
 
 	export let data;
-
-	console.log(data);
 </script>
 
 <div class="w-full max-w-3xl h-full m-auto">
@@ -20,6 +18,6 @@
 	<div class="text-xl mt-8 opacity-75">Your Videos</div>
 
 	{#each data.videos as vid}
-		<!-- {vid.name} -->
+		{vid.name}
 	{/each}
 </div>

@@ -6,3 +6,12 @@ export interface UserSession {
 	email: string | undefined;
 	uid: string | undefined;
 }
+
+export interface Video {
+	createdAt: Date;
+	fileSize: number;
+	downloadUrl: string;
+	name: string;
+	id: string;
+	uploadedBy: string;
+}

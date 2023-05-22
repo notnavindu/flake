@@ -2,65 +2,51 @@ import { FIREBASE_SERVER_CONFIG } from '$env/static/private';
 import type { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import admin from 'firebase-admin';
 import type { Document } from '$lib/models/Document';
+import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
+import { getFirestore } from 'firebase-admin/firestore';
+import { browser } from '$app/environment';
 
-function initializeFirebase() {
-	if (!admin.apps.length) {
-		const serviceAccount = JSON.parse(FIREBASE_SERVER_CONFIG);
-		return admin.initializeApp({
-			credential: admin.credential.cert(serviceAccount),
-			databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
-		});
-	} else {
-		console.log('+====>', admin.app().name);
-		return admin.app();
-	}
+export let HostFirebaseAdmin: FirebaseAdminBase;
+
+function initializeHostFirebase() {
+	const serviceAccount = JSON.parse(FIREBASE_SERVER_CONFIG);
+	HostFirebaseAdmin = new FirebaseAdminBase(serviceAccount.project_id, serviceAccount);
 }
 
-export function initializeCustomFirebaseApp(serviceAccount: any) {
-	let userApp = admin.apps.find((app) => app?.name === serviceAccount.project_id);
+export async function initializeCustomFirebaseAppOfUser(uid: string) {
+	const { serviceAccount } = (
+		await getFirestore(HostFirebaseAdmin.app).collection('service-accounts').doc(uid).get()
+	).data() as { serviceAccount: string };
 
-	if (!userApp) {
-		userApp = admin.initializeApp(
-			{
-				credential: admin.credential.cert(serviceAccount)
-			},
-			serviceAccount.project_id
-		);
-	}
+	const serviceAccountParsed = JSON.parse(serviceAccount);
 
-	return userApp;
+	console.log('this shii', serviceAccountParsed.project_id);
+
+	return new FirebaseAdminBase(serviceAccountParsed.project_id, serviceAccountParsed);
 }
+
+// export function initializeCustomFirebaseApp(serviceAccount: any) {
+// 	let userApp = admin.apps.find((app) => app?.name === serviceAccount.project_id);
+
+// 	if (!userApp) {
+// 		userApp = admin.initializeApp(
+// 			{
+// 				credential: admin.credential.cert(serviceAccount)
+// 			},
+// 			serviceAccount.project_id
+// 		);
+// 	}
+
+// 	return userApp;
+// }
 
 export async function decodeToken(token: string): Promise<DecodedIdToken | null> {
 	if (!token || token === 'null' || token === 'undefined') return null;
+
 	try {
-		initializeFirebase();
-		return await admin.auth().verifyIdToken(token);
+		initializeHostFirebase();
+		return await HostFirebaseAdmin.auth.verifyIdToken(token);
 	} catch (err) {
 		return null;
 	}
-}
-
-export async function getDocuments(collectionPath: string, uid: string): Promise<Array<Document>> {
-	if (!uid) return [];
-	initializeFirebase();
-	const db = admin.firestore();
-	const querySnapshot = await db.collection(collectionPath).where('uid', '==', uid).get();
-	const list: Array<Document> = [];
-	querySnapshot.forEach((doc) => {
-		const document: Document = <Document>doc.data(); // Just need the data on the server
-		document._id = doc.id;
-		list.push(document);
-	});
-	return list;
-}
-
-export async function createDocument(collectionPath: string, uid: string): Promise<Document> {
-	initializeFirebase();
-	const db = admin.firestore();
-	const doc = await (await db.collection(collectionPath).add({ uid })).get();
-
-	const document = <Document>doc.data(); // Just need the data on the server
-	document._id = doc.id;
-	return document;
 }

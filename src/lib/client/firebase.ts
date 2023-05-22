@@ -1,8 +1,6 @@
 import { browser } from '$app/environment';
 import { goto, invalidateAll } from '$app/navigation';
-import type { Document } from '$lib/models/Document';
-import { FirebaseBase } from '$lib/models/FirebaseBase';
-import type { AnyObject } from '$lib/models/types';
+import { FirebaseClientBase } from '$lib/models/FirebaseBase';
 import { singInLoading } from '$lib/stores/loaders.store';
 import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
 import { initializeApp } from 'firebase/app';
@@ -13,24 +11,12 @@ import {
 	onIdTokenChanged,
 	signInWithPopup
 } from 'firebase/auth';
-import {
-	addDoc,
-	collection,
-	deleteDoc,
-	doc,
-	getFirestore,
-	onSnapshot,
-	query,
-	setDoc,
-	where,
-	type Firestore
-} from 'firebase/firestore';
-import { readable } from 'svelte/store';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
-export let HostFirebase: FirebaseBase;
+export let HostFirebase: FirebaseClientBase;
 
-export let app: FirebaseApp;
-export let db: Firestore;
+// export let app: FirebaseApp;
+// export let db: Firestore;
 
 async function setToken(token: string) {
 	const options = {
@@ -45,19 +31,17 @@ async function setToken(token: string) {
 }
 
 function listenForAuthChanges() {
-	const auth = getAuth(app);
+	const auth = getAuth(HostFirebase.app);
 
+	console.log(auth);
 	onIdTokenChanged(
 		auth,
 		async (user) => {
+			console.log('user change', user);
 			if (user) {
-				console.log('HAS USER');
-
 				const token = await user.getIdToken();
 				await setToken(token);
 			} else {
-				console.log('NO AUTH USER');
-
 				await setToken('');
 			}
 			await invalidateAll();
@@ -67,7 +51,7 @@ function listenForAuthChanges() {
 }
 
 export async function refreshIdToken() {
-	const auth = getAuth(app);
+	const auth = getAuth(HostFirebase.app);
 
 	await auth.currentUser?.getIdToken(true);
 
@@ -78,12 +62,9 @@ export function initializeFirebase(options: FirebaseOptions) {
 	if (!browser) {
 		throw new Error("Can't use the Firebase client on the server.");
 	}
-	if (!app) {
-		HostFirebase = new FirebaseBase(options);
 
-		// DEPRECATED
-		app = initializeApp(options);
-		db = getFirestore(app);
+	if (!HostFirebase?.app) {
+		HostFirebase = new FirebaseClientBase(options);
 
 		listenForAuthChanges();
 	}
@@ -99,7 +80,7 @@ function providerFor(name: string) {
 }
 
 export async function signInWith(name: string) {
-	const auth = getAuth(app);
+	const auth = getAuth(HostFirebase.app);
 	const provider = providerFor(name);
 
 	singInLoading.set(true);
@@ -114,6 +95,6 @@ export async function signInWith(name: string) {
 }
 
 export async function signOut() {
-	const auth = getAuth(app);
+	const auth = getAuth(HostFirebase.app);
 	await _signOut(auth);
 }

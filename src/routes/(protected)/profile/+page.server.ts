@@ -1,4 +1,5 @@
-import { decodeToken, initializeCustomFirebaseApp } from '$lib/server/firebase';
+import type { Video } from '$lib/models/types.js';
+import { decodeToken, initializeCustomFirebaseAppOfUser } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -11,21 +12,16 @@ export async function load({ params, cookies }) {
 	}
 	const uid = decodedToken.uid;
 
-	getFirestore().collection('service-accounts').doc('uid');
+	let customAdminApp = await initializeCustomFirebaseAppOfUser(uid);
 
-	const { serviceAccount } = (
-		await getFirestore().collection('service-accounts').doc(uid).get()
-	).data() as { serviceAccount: string };
+	let data = (await customAdminApp.firestore.collection('flakes').get()).docs.map((doc) => {
+		return {
+			...doc.data(),
+			createdAt: doc.data().createdAt.toDate()
+		} as Video;
+	});
 
-	const serviceAccountParsed = JSON.parse(serviceAccount);
-
-	let userApp = initializeCustomFirebaseApp(serviceAccountParsed);
-
-	let data = (await userApp.firestore().collection('flakes').get()).docs.map((doc) => ({
-		...doc.data(),
-		createdAt: doc.data().createdAt.toDate()
-	}));
-	await userApp.delete();
+	await customAdminApp.deleteInstance();
 
 	if (!data) throw error(404, 'Invalid Video Id');
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Header from './Header.svelte';
 	import Auth from '$lib/components/auth/Auth.svelte';
 	import './styles.css';
 	import { browser } from '$app/environment';
