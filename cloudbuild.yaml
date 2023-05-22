@@ -9,7 +9,7 @@ steps:
     secretEnv: ['PUBLIC_FIREBASE_CLIENT_CONFIG', 'FIREBASE_SERVER_CONFIG']
 availableSecrets:
   secretManager:
-    - versionName: projects/482632270682/secrets/FIREBASE_SERVER_CONFIG/latest
+    - versionName: projects/482632270682/secrets/FIREBASE_SERVER_CONFIG
       env: 'FIREBASE_SERVER_CONFIG'
-    - versionName: projects/482632270682/secrets/PUBLIC_FIREBASE_CLIENT_CONFIG/latest
+    - versionName: projects/482632270682/secrets/PUBLIC_FIREBASE_CLIENT_CONFIG
       env: 'PUBLIC_FIREBASE_CLIENT_CONFIG'
