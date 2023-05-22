@@ -1,0 +1,15 @@
+steps:
+  - name: 'gce.io/k8s-skaffold/pack'
+    entrypoint: 'bash'
+    args:
+      [
+        '-c',
+        'pack build us-central1-docker.pkg.dev/flake-async/cloud-run-source-deploy/flake/flake:76940bc8c943458fff0a2c4fcc29b23a038d518e --builder=gcr.io/buildpacks/builder:v1 --network=cloudbuild --path=. --env=FIREBASE_SERVER_CONFIG=$$FIREBASE_SERVER_CONFIG --env=PUBLIC_FIREBASE_CLIENT_CONFIG=$$PUBLIC_FIREBASE_CLIENT_CONFIG'
+      ]
+    secretEnv: ['PUBLIC_FIREBASE_CLIENT_CONFIG', 'FIREBASE_SERVER_CONFIG']
+availableSecrets:
+  secretManager:
+    - versionName: projects/482632270682/secrets/FIREBASE_SERVER_CONFIG/1
+      env: 'FIREBASE_SERVER_CONFIG'
+    - versionName: projects/482632270682/secrets/PUBLIC_FIREBASE_CLIENT_CONFIG/
+      env: 'PUBLIC_FIREBASE_CLIENT_CONFIG'
