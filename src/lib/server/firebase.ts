@@ -11,6 +11,7 @@ function initializeHostFirebase() {
 }
 
 export async function initializeCustomFirebaseAppOfUser(uid: string) {
+	initializeHostFirebase();
 	const { serviceAccount } = (
 		await getFirestore(HostFirebaseAdmin.app).collection('service-accounts').doc(uid).get()
 	).data() as { serviceAccount: string };

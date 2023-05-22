@@ -16,7 +16,8 @@ export class FirebaseAdminBase {
 		if (!app) {
 			this.app = initializeApp(
 				{
-					credential: credential.cert(options)
+					credential: credential.cert(options),
+					storageBucket: `${projectId}.appspot.com`
 				},
 				projectId
 			);

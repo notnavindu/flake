@@ -14,6 +14,8 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 
 	const serviceAccount = body.account;
 
+	// TODO: validate servide acc
+
 	try {
 		const clientApp = new FirebaseAdminBase(serviceAccount.project_id, serviceAccount);
 
@@ -31,7 +33,10 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 					serviceAccount: JSON.stringify(serviceAccount)
 				}),
 
-			HostFirebaseAdmin.auth.setCustomUserClaims(uid, { setupComplete: true })
+			HostFirebaseAdmin.auth.setCustomUserClaims(uid, {
+				setupComplete: true,
+				connectedProjectId: serviceAccount.project_id
+			})
 		]);
 	} catch (err) {
 		throw error(400, 'Invalid Service Account');

@@ -1,4 +1,4 @@
-import type { Video } from '$lib/models/types.js';
+import type { Video } from '$lib/models/general.js';
 import { decodeToken, initializeCustomFirebaseAppOfUser } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
 import dayjs from 'dayjs';
