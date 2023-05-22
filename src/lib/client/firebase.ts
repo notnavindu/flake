@@ -33,11 +33,9 @@ async function setToken(token: string) {
 function listenForAuthChanges() {
 	const auth = getAuth(HostFirebase.app);
 
-	console.log(auth);
 	onIdTokenChanged(
 		auth,
 		async (user) => {
-			console.log('user change', user);
 			if (user) {
 				const token = await user.getIdToken();
 				await setToken(token);
@@ -87,8 +85,6 @@ export async function signInWith(name: string) {
 
 	signInWithPopup(auth, provider).then((res) => {
 		singInLoading.set(false);
-
-		console.log(res);
 
 		goto('/profile');
 	});

@@ -5,7 +5,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const token = event.cookies.get('token') || '';
 	const decodedToken = await decodeToken(token);
 
-	console.log('decoded', decodeToken);
 	if (decodedToken) {
 		const { uid, name, email, setupComplete } = decodedToken;
 		event.locals.userSession = { uid, name, email, setupComplete };

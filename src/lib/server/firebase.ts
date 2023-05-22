@@ -1,10 +1,7 @@
 import { FIREBASE_SERVER_CONFIG } from '$env/static/private';
-import type { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
-import admin from 'firebase-admin';
-import type { Document } from '$lib/models/Document';
 import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
 import { getFirestore } from 'firebase-admin/firestore';
-import { browser } from '$app/environment';
+import type { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 
 export let HostFirebaseAdmin: FirebaseAdminBase;
 
@@ -19,8 +16,6 @@ export async function initializeCustomFirebaseAppOfUser(uid: string) {
 	).data() as { serviceAccount: string };
 
 	const serviceAccountParsed = JSON.parse(serviceAccount);
-
-	console.log('this shii', serviceAccountParsed.project_id);
 
 	return new FirebaseAdminBase(serviceAccountParsed.project_id, serviceAccountParsed);
 }

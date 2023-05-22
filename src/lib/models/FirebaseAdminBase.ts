@@ -38,6 +38,10 @@ export class FirebaseAdminBase {
 	}
 
 	deleteInstance() {
-		deleteApp(this.app);
+		try {
+			deleteApp(this.app);
+		} catch (error) {
+			console.log('error deleting app');
+		}
 	}
 }
