@@ -1,5 +1,5 @@
 steps:
-  - name: 'gce.io/k8s-skaffold/pack'
+  - name: 'gcr.io/k8s-skaffold/pack'
     entrypoint: 'bash'
     args:
       [
