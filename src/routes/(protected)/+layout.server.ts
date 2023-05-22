@@ -8,9 +8,9 @@ export async function load({ parent, url }) {
 
 	if (!userSession) throw redirect(307, '/login');
 
-	// if (!url.pathname.startsWith('/onboarding') && !userSession?.setupComplete)
-	// 	throw redirect(307, '/onboarding');
+	if (!url.pathname.startsWith('/onboarding') && !userSession?.setupComplete)
+		throw redirect(307, '/onboarding');
 
-	// if (url.pathname.startsWith('/onboarding') && userSession.setupComplete)
-	// 	throw redirect(307, '/profile');
+	if (url.pathname.startsWith('/onboarding') && userSession.setupComplete)
+		throw redirect(307, '/profile');
 }

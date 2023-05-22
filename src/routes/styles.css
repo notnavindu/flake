@@ -4,5 +4,5 @@
 
 body {
 	font-family: 'Figtree', sans-serif;
-	@apply bg-black text-white;
+	@apply bg-black text-white scrollbar-hide;
 }

@@ -1,7 +1,4 @@
-<script lang="ts">
-	import Counter from './Counter.svelte';
-	import type { PageData } from './$types';
-	export let data: PageData;
+<script>
 </script>
 
 <svelte:head>
@@ -9,12 +6,10 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-	<div>Main</div>
-
-	{#if data.userCountData}
-		<Counter userCountData={data.userCountData} />
-	{/if}
+<section class="w-full h-screen flex items-center justify-center">
+	<div class="text-7xl text-center">
+		The self-hostable <br /> loom clone <br /> no one asked for.
+	</div>
 </section>
 
 <style>

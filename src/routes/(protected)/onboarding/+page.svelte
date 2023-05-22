@@ -3,7 +3,6 @@
 	import { validateAndSaveServiceAccount } from '$lib/client/api';
 	import { refreshIdToken } from '$lib/client/firebase';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
-	import ConfigHint from '$lib/components/onboarding/ConfigHint.svelte';
 	import OnboardingStep from '$lib/components/onboarding/OnboardingStep.svelte';
 	import { serviceAccountKeys } from '$lib/constants/validator.const';
 	import Icon from '@iconify/svelte';
@@ -36,7 +35,10 @@
 
 						const isValid = serviceAccountKeys.every((key) => serviceAccount[key]?.length > 0);
 
-						if (!isValid) return alert('Invalid JSON');
+						if (!isValid) {
+							validatingServiceAccount = true;
+							return alert('Invalid JSON');
+						}
 					} catch (error) {
 						console.log(error);
 						alert('error parsing json');
@@ -45,7 +47,6 @@
 					const { success } = await validateAndSaveServiceAccount(serviceAccount);
 
 					if (success) {
-						alert('GG');
 						await refreshIdToken();
 						goto('/new');
 					} else {
@@ -68,7 +69,8 @@
 		<Icon
 			width={364}
 			class="text-blue-400 transform transition-all duration-700"
-			style="transform: rotate({step * 60}deg); opacity: {20 + 17.5 * step}%"
+			style="transform: rotate({step * 60}deg) scale({0.8 + 0.1 * step}); 
+					opacity: {20 + 17.5 * step}%;"
 			icon="la:snowflake"
 		/>
 	</div>
@@ -87,34 +89,6 @@
 			</a>
 			and Create a basic project with the default settings. You can name your project anything you like
 			<br /><br />
-
-			<RoundedButton greenBlack on:click={() => step++}>
-				<Icon icon="mdi:tick" />
-				Done
-			</RoundedButton>
-		</OnboardingStep>
-
-		<OnboardingStep bind:step idx={1} title="Register your app">
-			<p>
-				1. Follow <a
-					class="text-blue-500 underline font-bold"
-					target="_blank"
-					rel="noopener noreferrer"
-					href="https://firebase.google.com/docs/web/setup#register-app"
-				>
-					this guide
-				</a>
-				to register a new app for your project
-			</p>
-			<br />
-			<p>2. Copy and paste your client side configuration below</p>
-
-			<textarea
-				class="w-full bg-black border-2 border-zinc-500 text-white mt-4 rounded-md focus:outline-none p-3"
-				rows="5"
-			/>
-
-			<ConfigHint />
 
 			<RoundedButton greenBlack on:click={() => step++}>
 				<Icon icon="mdi:tick" />

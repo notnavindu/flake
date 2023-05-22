@@ -26,13 +26,13 @@
 
 <div class="h-screen">
 	<header class="w-full fixed top-0 left-0 flex items-center justify-between p-5">
-		<div
-			class="flex items-center justify-center text-3xl leading-none gap-2 group select-none cursor-pointer"
-		>
-			<Icon
-				class="text-blue-400 transition-all group-hover:rotate-180 duration-700"
-				icon="la:snowflake"
-			/> Flake
+		<div class=" text-3xl leading-none gap-2 group select-none cursor-pointer">
+			<a href="/" class="flex items-center justify-center gap-2">
+				<Icon
+					class="text-blue-400 transition-all group-hover:rotate-180 duration-700"
+					icon="la:snowflake"
+				/> Flake
+			</a>
 		</div>
 
 		<div class="flex gap-2">
