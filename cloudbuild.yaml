@@ -1,6 +1,6 @@
 steps:
   - name: 'gcr.io/k8s-skaffold/pack'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       [
         '-c',
