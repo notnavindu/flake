@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { app, apps, auth, credential } from 'firebase-admin';
+import admin from 'firebase-admin';
 import { deleteApp, type App, type ServiceAccount } from 'firebase-admin/app';
 import { initializeApp, type AppOptions } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -11,12 +11,12 @@ export class FirebaseAdminBase {
 	constructor(projectId: string, options: ServiceAccount) {
 		if (browser) throw 'Cannot be used on client';
 
-		let app = apps.find((app) => app?.name === projectId);
+		let app = admin.apps.find((app) => app?.name === projectId);
 
 		if (!app) {
 			this.app = initializeApp(
 				{
-					credential: credential.cert(options),
+					credential: admin.credential.cert(options),
 					storageBucket: `${projectId}.appspot.com`
 				},
 				projectId
@@ -35,7 +35,7 @@ export class FirebaseAdminBase {
 	}
 
 	get auth() {
-		return auth(this.app);
+		return admin.auth(this.app);
 	}
 
 	deleteInstance() {
