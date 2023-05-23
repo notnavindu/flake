@@ -8,7 +8,7 @@
 
 <section class="w-full h-screen flex items-center justify-center">
 	<div class="text-7xl text-center">
-		The self-hostable <br /> loom clone <br /> no one asked for...
+		The self-hostable <br /> loom clone <br /> no one asked for
 	</div>
 </section>
 
