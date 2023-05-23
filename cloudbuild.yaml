@@ -4,7 +4,7 @@ steps:
     args:
       [
         '-c',
-        'pack build $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --builder=gcr.io/buildpacks/builder:v1 --network=cloudbuild --path=.  --env=FIREBASE_SERVER_CONFIG=FIREBASE_SERVER_CONFIG --env=PUBLIC_API_KEY=PUBLIC_API_KEY --env=PUBLIC_AUTH_DOMAIN=PUBLIC_AUTH_DOMAIN --env=PUBLIC_PROJECT_ID=PUBLIC_PROJECT_ID --env=PUBLIC_STORAGE_BUCKET=PUBLIC_STORAGE_BUCKET --env=PUBLIC_MESSAGE_SENDER_ID=PUBLIC_MESSAGE_SENDER_ID --env=PUBLIC_APP_ID=PUBLIC_APP_ID'
+        'pack build $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --builder=gcr.io/buildpacks/builder:v1 --network=cloudbuild --path=.  --env=FIREBASE_SERVER_CONFIG --env=PUBLIC_API_KEY --env=PUBLIC_AUTH_DOMAIN --env=PUBLIC_PROJECT_ID --env=PUBLIC_STORAGE_BUCKET --env=PUBLIC_MESSAGE_SENDER_ID --env=PUBLIC_APP_ID'
       ]
     secretEnv:
       [
