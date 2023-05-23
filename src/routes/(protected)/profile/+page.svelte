@@ -5,6 +5,7 @@
 	import Icon from '@iconify/svelte';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
+	import { flip } from 'svelte/animate';
 
 	dayjs.extend(relativeTime);
 
@@ -34,8 +35,8 @@
 	<div class="text-xl mt-8 opacity-75">Your Videos</div>
 
 	<div class="flex flex-col flex-wrap gap-2 mt-2" class:opacity-75={loading}>
-		{#each data.videos as vid}
-			<div class="p-3 bg-zinc-800 flex flex-col">
+		{#each data.videos as vid (vid.id)}
+			<div class="p-3 bg-zinc-800 flex flex-col" animate:flip>
 				<div class="flex justify-between">
 					<div>
 						<a href={`/${vid.id}`}>{vid.name}</a>

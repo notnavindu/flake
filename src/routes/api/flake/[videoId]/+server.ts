@@ -4,7 +4,6 @@ import {
 	initializeCustomFirebaseAppOfUser
 } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
-import admin from 'firebase-admin';
 import type { RequestHandler } from './$types.js';
 
 // export const GET: RequestHandler = async ({ request, cookies, url }) => {

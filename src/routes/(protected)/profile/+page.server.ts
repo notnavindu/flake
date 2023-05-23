@@ -1,8 +1,6 @@
 import type { Video } from '$lib/models/general.js';
 import { decodeToken, initializeCustomFirebaseAppOfUser } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
-import dayjs from 'dayjs';
-import { getFirestore } from 'firebase-admin/firestore';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, cookies }) => {

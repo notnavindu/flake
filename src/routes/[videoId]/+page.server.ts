@@ -14,6 +14,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 			id: doc.id,
 			downloadUrl: doc.downloadUrl,
 			name: doc.name,
+			uploadedAt: doc.uploadedAt,
 			uploadedBy: doc.uploadedBy,
 			uploadedByName: doc.uploadedByName
 		}
