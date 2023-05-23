@@ -3,7 +3,14 @@
 	import './styles.css';
 	import { browser } from '$app/environment';
 	import { initializeFirebase } from '$lib/client/firebase';
-	import { PUBLIC_FIREBASE_CLIENT_CONFIG } from '$env/dynamic/public';
+	import {
+		PUBLIC_API_KEY,
+		PUBLIC_APP_ID,
+		PUBLIC_AUTH_DOMAIN,
+		PUBLIC_MESSAGE_SENDER_ID,
+		PUBLIC_PROJECT_ID,
+		PUBLIC_STORAGE_BUCKET
+	} from '$env/static/public';
 	import Icon from '@iconify/svelte';
 
 	import '@fontsource/figtree/300.css';
@@ -16,7 +23,14 @@
 
 	if (browser) {
 		try {
-			initializeFirebase(JSON.parse(`${PUBLIC_FIREBASE_CLIENT_CONFIG}`));
+			initializeFirebase({
+				apiKey: PUBLIC_API_KEY,
+				appId: PUBLIC_APP_ID,
+				authDomain: PUBLIC_AUTH_DOMAIN,
+				messagingSenderId: PUBLIC_MESSAGE_SENDER_ID,
+				projectId: PUBLIC_PROJECT_ID,
+				storageBucket: PUBLIC_STORAGE_BUCKET
+			});
 		} catch (ex) {
 			console.error(ex);
 		}
