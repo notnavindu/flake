@@ -8,7 +8,8 @@ steps:
       ]
     secretEnv: ['PUBLIC_FIREBASE_CLIENT_CONFIG', 'FIREBASE_SERVER_CONFIG']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA', '.']
+    entrypoint:
+    args: ['push', '$_AR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA']
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     entrypoint: gcloud
     args:
