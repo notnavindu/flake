@@ -34,3 +34,9 @@ export let deleteVideo = async (videoId: string) => {
 		return data;
 	});
 };
+
+export let updateVideoTitle = async (videoId: string, name: string) => {
+	return await axios.patch(`/api/flake/${videoId}`, { name }).then(({ data }) => {
+		return data;
+	});
+};

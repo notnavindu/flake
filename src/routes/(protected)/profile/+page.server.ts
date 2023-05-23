@@ -3,9 +3,9 @@ import { decodeToken, initializeCustomFirebaseAppOfUser } from '$lib/server/fire
 import { error } from '@sveltejs/kit';
 import dayjs from 'dayjs';
 import { getFirestore } from 'firebase-admin/firestore';
+import type { PageServerLoad } from './$types';
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ params, cookies }) {
+export const load: PageServerLoad = async ({ params, cookies }) => {
 	const decodedToken = await decodeToken(cookies.get('token') || '');
 	if (!decodedToken) {
 		throw error(401, 'Not logged in');
@@ -30,4 +30,4 @@ export async function load({ params, cookies }) {
 	return {
 		videos: data
 	};
-}
+};

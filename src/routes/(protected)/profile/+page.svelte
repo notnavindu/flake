@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	import { deleteVideo } from '$lib/client/api.js';
 	import { signOut } from '$lib/client/firebase';
 
 	import Icon from '@iconify/svelte';
@@ -8,6 +9,17 @@
 	dayjs.extend(relativeTime);
 
 	export let data;
+
+	let loading = false;
+
+	const handleDeleteClick = async (id: string) => {
+		loading = true;
+
+		await deleteVideo(id);
+		data.videos = data.videos.filter((vid) => vid.id != id);
+
+		loading = false;
+	};
 </script>
 
 <div class="w-full max-w-3xl h-full m-auto">
@@ -21,16 +33,27 @@
 
 	<div class="text-xl mt-8 opacity-75">Your Videos</div>
 
-	<div class="flex flex-col flex-wrap gap-2 mt-2">
+	<div class="flex flex-col flex-wrap gap-2 mt-2" class:opacity-75={loading}>
 		{#each data.videos as vid}
-			<a href={`/${vid.id}`}>
-				<div class="p-3 bg-zinc-800 flex flex-col">
-					<div class="flex justify-between">
-						{vid.name} <span class="text-xs opacity-50">{dayjs(vid.createdAt).fromNow()}</span>
+			<div class="p-3 bg-zinc-800 flex flex-col">
+				<div class="flex justify-between">
+					<div>
+						<a href={`/${vid.id}`}>{vid.name}</a>
+						<div class="text-xs opacity-50">{(vid.fileSize / 1024 / 1024).toFixed(2)} MB</div>
 					</div>
-					<div class="text-xs opacity-50">{(vid.fileSize / 1024 / 1024).toFixed(2)} MB</div>
+
+					<div class="flex flex-col items-end">
+						<div class="text-xs opacity-50">{dayjs(vid.createdAt).fromNow()}</div>
+						<button
+							disabled={loading}
+							on:click={() => handleDeleteClick(vid.id)}
+							class="text-sm mt-2"
+						>
+							<Icon icon="ic:outline-delete" />
+						</button>
+					</div>
 				</div>
-			</a>
+			</div>
 		{/each}
 	</div>
 </div>

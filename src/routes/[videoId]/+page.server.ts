@@ -1,21 +1,11 @@
-import { decodeToken, initializeCustomFirebaseAppOfUser } from '$lib/server/firebase';
+import { initializeHostFirebase } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
-import dayjs from 'dayjs';
-import { getFirestore } from 'firebase-admin/firestore';
+import type { PageServerLoad } from './$types.js';
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ params, cookies }) {
-	const decodedToken = await decodeToken(cookies.get('token') || '');
-	if (!decodedToken) {
-		throw error(401, 'Not logged in');
-	}
-	const uid = decodedToken.uid;
+export const load: PageServerLoad = async ({ params, cookies }) => {
+	const hostAdmin = initializeHostFirebase();
 
-	let userApp = await initializeCustomFirebaseAppOfUser(uid);
-
-	let doc = (await userApp.firestore.collection('flakes').doc(params.videoId).get()).data();
-
-	await userApp.deleteInstance();
+	let doc = (await hostAdmin.firestore.collection('flakes').doc(params.videoId).get()).data();
 
 	if (!doc) throw error(404, 'Invalid Video Id');
 
@@ -24,7 +14,8 @@ export async function load({ params, cookies }) {
 			id: doc.id,
 			downloadUrl: doc.downloadUrl,
 			name: doc.name,
-			uploadedBy: doc.uploadedBy
+			uploadedBy: doc.uploadedBy,
+			uploadedByName: doc.uploadedByName
 		}
 	};
-}
+};

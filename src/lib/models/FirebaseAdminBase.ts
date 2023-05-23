@@ -23,6 +23,7 @@ export class FirebaseAdminBase {
 				projectId
 			);
 		} else {
+			console.log('Created app');
 			this.app = app;
 		}
 	}

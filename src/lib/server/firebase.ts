@@ -5,9 +5,11 @@ import type { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 
 export let HostFirebaseAdmin: FirebaseAdminBase;
 
-function initializeHostFirebase() {
+export function initializeHostFirebase() {
 	const serviceAccount = JSON.parse(FIREBASE_SERVER_CONFIG);
 	HostFirebaseAdmin = new FirebaseAdminBase(serviceAccount.project_id, serviceAccount);
+
+	return HostFirebaseAdmin;
 }
 
 export async function initializeCustomFirebaseAppOfUser(uid: string) {
