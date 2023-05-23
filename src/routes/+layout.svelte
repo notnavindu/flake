@@ -16,7 +16,7 @@
 
 	if (browser) {
 		try {
-			initializeFirebase(JSON.parse(PUBLIC_FIREBASE_CLIENT_CONFIG));
+			initializeFirebase(JSON.parse(`${PUBLIC_FIREBASE_CLIENT_CONFIG}`));
 		} catch (ex) {
 			console.error(ex);
 		}
