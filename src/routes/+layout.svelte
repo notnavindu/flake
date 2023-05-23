@@ -3,7 +3,7 @@
 	import './styles.css';
 	import { browser } from '$app/environment';
 	import { initializeFirebase } from '$lib/client/firebase';
-	import { PUBLIC_FIREBASE_CLIENT_CONFIG } from '$env/static/public';
+	import { PUBLIC_FIREBASE_CLIENT_CONFIG } from '$env/dynamic/public';
 	import Icon from '@iconify/svelte';
 
 	import '@fontsource/figtree/300.css';
