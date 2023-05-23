@@ -146,6 +146,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>New | Flake</title>
+</svelte:head>
+
 <section class="w-full max-w-4xl m-auto h-full flex flex-col justify-center">
 	<div class="text-4xl mb-4">New Flake</div>
 

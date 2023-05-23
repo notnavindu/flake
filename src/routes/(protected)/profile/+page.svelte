@@ -23,6 +23,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Profile | Flake</title>
+</svelte:head>
+
 <div class="w-full max-w-3xl h-full m-auto">
 	<div class="flex justify-between mt-20 items-center">
 		<div class="text-3xl">Hello, {data.userSession.name.split(' ')[0]}!</div>

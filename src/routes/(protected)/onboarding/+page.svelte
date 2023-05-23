@@ -64,6 +64,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Onboarding | Flake</title>
+</svelte:head>
+
 <div class="w-full h-full grid grid-cols-2">
 	<div class="flex items-center justify-center h-screen">
 		<Icon

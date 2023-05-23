@@ -23,6 +23,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Watch | Flake</title>
+</svelte:head>
+
 <div class="w-full h-full max-w-3xl m-auto flex items-center justify-center">
 	<div class="flex flex-col">
 		<!-- svelte-ignore a11y-autofocus -->
