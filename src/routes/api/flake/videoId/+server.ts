@@ -1,11 +1,6 @@
-import { createDocument, getDocuments, decodeToken } from '$lib/server/firebase';
+import { decodeToken, initializeCustomFirebaseAppOfUser } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
 import admin from 'firebase-admin';
-import { getStorage } from 'firebase-admin/storage';
-import dayjs from 'dayjs';
-import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, credential, type ServiceAccount } from 'firebase-admin';
 
 // export const POST: RequestHandler = async ({ request, cookies, url }) => {
 // 	const decodedToken = await decodeToken(cookies.get('token') || '');
@@ -35,7 +30,7 @@ import { initializeApp, credential, type ServiceAccount } from 'firebase-admin';
 // 	return new Response(JSON.stringify({ success: true }));
 // };
 
-export const GET: RequestHandler = async ({ request, cookies, url }) => {
+export const GET = async ({ request, cookies, url }) => {
 	const decodedToken = await decodeToken(cookies.get('token') || '');
 
 	if (!decodedToken) {
@@ -44,6 +39,24 @@ export const GET: RequestHandler = async ({ request, cookies, url }) => {
 	const uid = decodedToken.uid;
 
 	console.log(admin.apps[0]?.options);
+
+	return new Response(JSON.stringify({ success: true }));
+};
+
+/** @type {import('./$types').RequestHandler} */
+export const DELETE = async ({ request, cookies, params }) => {
+	const decodedToken = await decodeToken(cookies.get('token') || '');
+
+	if (!decodedToken) {
+		throw error(401, 'Not logged in');
+	}
+	const uid = decodedToken.uid;
+
+	const videoId = params.videoId;
+
+	const customAdminApp = await initializeCustomFirebaseAppOfUser(uid);
+
+	customAdminApp.firestore.collection('flakes').doc();
 
 	return new Response(JSON.stringify({ success: true }));
 };

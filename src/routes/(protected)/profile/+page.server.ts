@@ -14,7 +14,9 @@ export async function load({ params, cookies }) {
 
 	let customAdminApp = await initializeCustomFirebaseAppOfUser(uid);
 
-	let data = (await customAdminApp.firestore.collection('flakes').get()).docs.map((doc) => {
+	let data = (
+		await customAdminApp.firestore.collection('flakes').orderBy('createdAt', 'desc').get()
+	).docs.map((doc) => {
 		return {
 			...doc.data(),
 			createdAt: doc.data().createdAt.toDate()

@@ -28,3 +28,9 @@ export let validateAndSaveServiceAccount = async (account: object) => {
 		return data;
 	});
 };
+
+export let deleteVideo = async (videoId: string) => {
+	return await axios.delete(`/api/flake/${videoId}`).then(({ data }) => {
+		return data;
+	});
+};

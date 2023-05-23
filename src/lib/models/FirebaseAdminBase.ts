@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import admin from 'firebase-admin';
-import { deleteApp, type App, type ServiceAccount } from 'firebase-admin/app';
+import type { App, ServiceAccount } from 'firebase-admin/app';
 import { initializeApp, type AppOptions } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
@@ -11,6 +11,7 @@ export class FirebaseAdminBase {
 	constructor(projectId: string, options: ServiceAccount) {
 		if (browser) throw 'Cannot be used on client';
 
+		console.log('APPS LENGTH: ', admin.apps.length);
 		let app = admin.apps.find((app) => app?.name === projectId);
 
 		if (!app) {
@@ -39,10 +40,10 @@ export class FirebaseAdminBase {
 	}
 
 	deleteInstance() {
-		try {
-			deleteApp(this.app);
-		} catch (error) {
-			console.log('error deleting app');
-		}
+		// try {
+		// 	deleteApp(this.app);
+		// } catch (error) {
+		// 	console.log('error deleting app');
+		// }
 	}
 }
