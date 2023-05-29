@@ -40,3 +40,9 @@ export let updateVideoTitle = async (videoId: string, name: string) => {
 		return data;
 	});
 };
+
+export let getDeepgramState = async () => {
+	return await axios.get('/api/deepgram').then(({ data }) => {
+		return data;
+	});
+};

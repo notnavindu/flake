@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { uploadMedia } from '$lib/client/api';
+	import { getDeepgramState, uploadMedia } from '$lib/client/api';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
 	import GrantPermissions from '$lib/components/Microphone/GrantPermissions.svelte';
 	import MicrophoneDisable from '$lib/components/Microphone/MicrophoneDisable.svelte';
 	import MicrophoneSelect from '$lib/components/Microphone/MicrophoneSelect.svelte';
+	import SetupTranscribe from '$lib/components/Transcribe/SetupTranscribe.svelte';
+	import TranscribeToggle from '$lib/components/Transcribe/TranscribeToggle.svelte';
 	import Icon from '@iconify/svelte';
 	import { onMount } from 'svelte';
 	import { tweened } from 'svelte/motion';
@@ -186,6 +188,26 @@
 							{/each}
 						{/if}
 					</div>
+
+					<!-- Transcribe -->
+					{#if microphones.length > 0}
+						<div in:fade={{ delay: 200 * microphones.length }}>
+							<div class="mb-2 mt-8">Speech-To-Text</div>
+							<div class="flex flex-wrap gap-1 w-full">
+								<div>
+									{#await getDeepgramState() then state}
+										{JSON.stringify(state)}
+
+										{#if state.deepgramSetup}
+											<TranscribeToggle />
+										{:else}
+											<SetupTranscribe />
+										{/if}
+									{/await}
+								</div>
+							</div>
+						</div>
+					{/if}
 
 					{#if mounted}
 						<div class="mt-auto ml-auto" in:fly={{ y: 30, delay: 100 }}>
