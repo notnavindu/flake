@@ -2,8 +2,7 @@ import { browser } from '$app/environment';
 import { goto, invalidateAll } from '$app/navigation';
 import { FirebaseClientBase } from '$lib/models/FirebaseBase';
 import { singInLoading } from '$lib/stores/loaders.store';
-import type { FirebaseApp, FirebaseOptions } from 'firebase/app';
-import { initializeApp } from 'firebase/app';
+import type { FirebaseOptions } from 'firebase/app';
 import {
 	GoogleAuthProvider,
 	signOut as _signOut,
@@ -11,7 +10,6 @@ import {
 	onIdTokenChanged,
 	signInWithPopup
 } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
 
 export let HostFirebase: FirebaseClientBase;
 

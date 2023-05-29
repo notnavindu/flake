@@ -40,7 +40,7 @@
 
 	<div class="flex flex-col flex-wrap gap-2 mt-2" class:opacity-75={loading}>
 		{#each data.videos as vid (vid.id)}
-			<div class="p-3 bg-zinc-800 flex flex-col" animate:flip>
+			<div class="p-3 bg-zinc-800 flex flex-col rounded-md" animate:flip>
 				<div class="flex justify-between">
 					<div>
 						<a href={`/${vid.id}`}>{vid.name}</a>

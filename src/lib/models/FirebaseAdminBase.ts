@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import admin from 'firebase-admin';
 import type { App, ServiceAccount } from 'firebase-admin/app';
-import { initializeApp, type AppOptions } from 'firebase-admin/app';
+import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 

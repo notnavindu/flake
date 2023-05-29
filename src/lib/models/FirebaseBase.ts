@@ -1,5 +1,4 @@
-import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { initializeApp, type FirebaseOptions } from 'firebase/app';
 
 export class FirebaseClientBase {
 	#options: FirebaseOptions;

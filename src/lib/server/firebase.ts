@@ -23,21 +23,6 @@ export async function initializeCustomFirebaseAppOfUser(uid: string) {
 	return new FirebaseAdminBase(serviceAccountParsed.project_id, serviceAccountParsed);
 }
 
-// export function initializeCustomFirebaseApp(serviceAccount: any) {
-// 	let userApp = admin.apps.find((app) => app?.name === serviceAccount.project_id);
-
-// 	if (!userApp) {
-// 		userApp = admin.initializeApp(
-// 			{
-// 				credential: admin.credential.cert(serviceAccount)
-// 			},
-// 			serviceAccount.project_id
-// 		);
-// 	}
-
-// 	return userApp;
-// }
-
 export async function decodeToken(token: string): Promise<DecodedIdToken | null> {
 	if (!token || token === 'null' || token === 'undefined') return null;
 

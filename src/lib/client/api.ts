@@ -1,6 +1,6 @@
+import axios from 'axios';
 import FormData from 'form-data';
 import type { Tweened } from 'svelte/motion';
-import axios from 'axios';
 
 export let uploadMedia = async (image: any, progreeRef: Tweened<number> | null = null) => {
 	let data = new FormData();
