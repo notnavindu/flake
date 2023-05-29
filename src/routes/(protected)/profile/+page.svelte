@@ -45,7 +45,7 @@
 	<div class="grid grid-cols-2 gap-6 pt-4">
 		{#await getMe() then me}
 			<FirebaseConfigCard projectId={me.projectId} />
-			<DeepgramConfiguration />
+			<DeepgramConfiguration deepgramSetup={me.deepgramSetup} />
 		{/await}
 	</div>
 
