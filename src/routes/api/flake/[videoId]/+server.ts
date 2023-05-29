@@ -6,19 +6,6 @@ import {
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
 
-// export const GET: RequestHandler = async ({ request, cookies, url }) => {
-// 	const decodedToken = await decodeToken(cookies.get('token') || '');
-
-// 	if (!decodedToken) {
-// 		throw error(401, 'Not logged in');
-// 	}
-// 	const uid = decodedToken.uid;
-
-// 	console.log(admin.apps[0]?.options);
-
-// 	return new Response(JSON.stringify({ success: true }));
-// };
-
 export const PATCH: RequestHandler = async ({ request, cookies, params }) => {
 	const decodedToken = await decodeToken(cookies.get('token') || '');
 

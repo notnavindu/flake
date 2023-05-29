@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { getDeepgramState, uploadMedia } from '$lib/client/api';
+	import { getMe, uploadMedia } from '$lib/client/api';
 	import RoundedButton from '$lib/components/Common/RoundedButton.svelte';
 	import GrantPermissions from '$lib/components/Microphone/GrantPermissions.svelte';
 	import MicrophoneDisable from '$lib/components/Microphone/MicrophoneDisable.svelte';
@@ -195,7 +195,7 @@
 							<div class="mb-2 mt-8">Speech-To-Text</div>
 							<div class="flex flex-wrap gap-1 w-full">
 								<div>
-									{#await getDeepgramState() then state}
+									{#await getMe() then state}
 										{JSON.stringify(state)}
 
 										{#if state.deepgramSetup}

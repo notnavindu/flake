@@ -15,3 +15,8 @@ export interface Video {
 	id: string;
 	uploadedBy: string;
 }
+
+export interface UserData {
+	deepgramSetup?: string;
+	projectId?: string;
+}

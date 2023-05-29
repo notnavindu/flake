@@ -33,6 +33,10 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 					serviceAccount: JSON.stringify(serviceAccount)
 				}),
 
+			HostFirebaseAdmin.firestore.collection('users').doc(`${uid}`).set({
+				projectId: serviceAccount.project_id
+			}),
+
 			HostFirebaseAdmin.auth.setCustomUserClaims(uid, {
 				setupComplete: true,
 				connectedProjectId: serviceAccount.project_id

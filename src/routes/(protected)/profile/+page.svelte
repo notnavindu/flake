@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { deleteVideo } from '$lib/client/api.js';
+	import { deleteVideo, getMe } from '$lib/client/api.js';
 	import { signOut } from '$lib/client/firebase';
+	import DeepgramConfiguration from '$lib/components/ConfigCards/DeepgramConfiguration.svelte';
+	import FirebaseConfigCard from '$lib/components/ConfigCards/FirebaseConfigCard.svelte';
 
 	import Icon from '@iconify/svelte';
 	import dayjs from 'dayjs';
@@ -36,7 +38,18 @@
 		</button>
 	</div>
 
-	<div class="text-xl mt-8 opacity-75">Your Videos</div>
+	<div class="w-full h-px bg-blue-400 mt-4" />
+
+	<div class="text-3xl mt-8">Configuration</div>
+
+	<div class="grid grid-cols-2 gap-6 pt-4">
+		{#await getMe() then me}
+			<FirebaseConfigCard projectId={me.projectId} />
+			<DeepgramConfiguration />
+		{/await}
+	</div>
+
+	<div class="text-3xl mt-8">Your Videos</div>
 
 	<div class="flex flex-col flex-wrap gap-2 mt-2" class:opacity-75={loading}>
 		{#each data.videos as vid (vid.id)}

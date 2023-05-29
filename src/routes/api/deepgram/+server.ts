@@ -1,5 +1,9 @@
 import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
-import { HostFirebaseAdmin, decodeToken } from '$lib/server/firebase';
+import {
+	HostFirebaseAdmin,
+	decodeToken,
+	initializeCustomFirebaseAppOfUser
+} from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -11,7 +15,7 @@ export const GET: RequestHandler = async ({ request, cookies, url }) => {
 	}
 	const uid = decodedToken.uid;
 
-	const userDoc = (await HostFirebaseAdmin.firestore.collection('flakes').doc(uid).get()).data();
+	const userDoc = (await HostFirebaseAdmin.firestore.collection('users').doc(uid).get()).data();
 
 	return new Response(JSON.stringify({ deepgramSetup: userDoc?.deepgramSetup ?? false }));
 };
@@ -22,38 +26,16 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	if (!decodedToken) {
 		throw error(401, 'Not logged in');
 	}
+
 	const uid = decodedToken.uid;
-	const body = await request.json();
 
-	const serviceAccount = body.account;
+	const { secret } = await request.json();
+	const customAdminApp = await initializeCustomFirebaseAppOfUser(uid);
 
-	// TODO: validate servide acc
-
-	try {
-		const clientApp = new FirebaseAdminBase(serviceAccount.project_id, serviceAccount);
-
-		await clientApp.firestore.collection('test').doc('test').set({ this: true });
-		await clientApp.firestore.collection('test').doc('test').delete();
-
-		await clientApp.deleteInstance();
-
-		// TODO: Encrypt with AES
-		await Promise.all([
-			HostFirebaseAdmin.firestore
-				.collection('service-accounts')
-				.doc(`${uid}`)
-				.set({
-					serviceAccount: JSON.stringify(serviceAccount)
-				}),
-
-			HostFirebaseAdmin.auth.setCustomUserClaims(uid, {
-				setupComplete: true,
-				connectedProjectId: serviceAccount.project_id
-			})
-		]);
-	} catch (err) {
-		throw error(400, 'Invalid Service Account');
-	}
+	await Promise.all([
+		customAdminApp.firestore.collection('deepgram').doc(uid).set({ secret: secret }),
+		HostFirebaseAdmin.firestore.collection('users').doc(uid).update({ deepgramSetup: true })
+	]);
 
 	return new Response(JSON.stringify({ success: true }));
 };
