@@ -9,13 +9,7 @@
 </script>
 
 {#if $page.data.userSession}
-	<button
-		in:fly={{ x: 50, delay: 200 }}
-		on:click={() => goto('/new')}
-		class="w-8 h-8 bg-blue-500 rounded-full leading-none text-xl"
-	>
-		+
-	</button>
+	<RoundedButton on:click={() => goto('/new')} blueWhite>+ New</RoundedButton>
 
 	<div in:fly={{ x: 50 }}>
 		<RoundedButton on:click={() => goto('/profile')} blackWhite>

@@ -81,8 +81,11 @@ export async function signInWith(name: string) {
 
 	singInLoading.set(true);
 
-	signInWithPopup(auth, provider).then((res) => {
+	signInWithPopup(auth, provider).then(async (res) => {
+		await invalidateAll();
+
 		singInLoading.set(false);
+		console.log('signed in');
 
 		goto('/profile');
 	});
