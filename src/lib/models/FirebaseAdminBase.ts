@@ -11,7 +11,6 @@ export class FirebaseAdminBase {
 	constructor(projectId: string, options: ServiceAccount) {
 		if (browser) throw 'Cannot be used on client';
 
-		console.log('APPS LENGTH: ', admin.apps.length);
 		let app = admin.apps.find((app) => app?.name === projectId);
 
 		if (!app) {
@@ -23,7 +22,6 @@ export class FirebaseAdminBase {
 				projectId
 			);
 		} else {
-			console.log('Created app');
 			this.app = app;
 		}
 	}

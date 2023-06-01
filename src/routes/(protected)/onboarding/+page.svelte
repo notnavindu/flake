@@ -7,10 +7,8 @@
 	import { serviceAccountKeys } from '$lib/constants/validator.const';
 	import Icon from '@iconify/svelte';
 
-	let step = 1;
+	let step = 0;
 	let validatingServiceAccount = false;
-
-	// TODO: Save state to localstorage
 
 	const createFilePicker = () => {
 		let input = document.createElement('input');
@@ -68,8 +66,8 @@
 	<title>Onboarding | Flake</title>
 </svelte:head>
 
-<div class="w-full h-full grid grid-cols-2">
-	<div class="flex items-center justify-center h-screen">
+<div class="w-full h-full grid grid-rows-2 md:grid-cols-2">
+	<div class="flex items-center justify-center h-full md:h-screen">
 		<Icon
 			width={364}
 			class="text-blue-400 transform transition-all duration-700"
@@ -80,7 +78,7 @@
 	</div>
 
 	<div class="p-5 h-screen overflow-auto">
-		<div class="text-3xl mb-8 mt-16">Let's get you up to <br />speed with Flake</div>
+		<div class="text-3xl mb-8 mt-0 md:mt-24">Let's get you up to <br />speed with Flake</div>
 
 		<OnboardingStep bind:step idx={0} title="Create a Firebase Project">
 			Go to your <a
@@ -91,7 +89,7 @@
 			>
 				Firebase Console
 			</a>
-			and Create a basic project with the default settings. You can name your project anything you like
+			and create a basic project with the default settings. You can name your project anything you like.
 			<br /><br />
 
 			<RoundedButton greenBlack on:click={() => step++}>
@@ -100,9 +98,9 @@
 			</RoundedButton>
 		</OnboardingStep>
 
-		<OnboardingStep bind:step idx={1} title="Enable Firebase Storage">
+		<OnboardingStep bind:step idx={1} title="Enable Firebase Storage & Firestore">
 			<p>
-				Visit your Firebase project's <a
+				1. Visit your Firebase project's <a
 					class="text-blue-500 underline"
 					target="_blank"
 					rel="noopener noreferrer"
@@ -115,17 +113,33 @@
 
 			<br />
 
-			<p>Then, click <span class="text-blue-300">Get Started</span></p>
+			<p>
+				2. Click <span class="text-blue-300">Get Started </span> →
+				<span class="text-blue-300">Start in Production Mode</span>
+			</p>
 
 			<br />
 
 			<p>
-				In the configuration popup, choose <span class="text-blue-300">
-					Start in Production Mode
-				</span>
+				3. Visit your Firebase project's <a
+					class="text-blue-500 underline"
+					target="_blank"
+					rel="noopener noreferrer"
+					href="https://console.firebase.google.com/u/0/project/_/firestore"
+				>
+					Firestore Tab
+				</a>
+				from the project console.
 			</p>
 
-			<br /><br />
+			<br />
+
+			<p>
+				2. Click <span class="text-blue-300">Create database </span> →
+				<span class="text-blue-300">Start in Production Mode</span>
+			</p>
+
+			<br />
 
 			<RoundedButton greenBlack on:click={() => step++}>
 				<Icon icon="mdi:tick" />
@@ -133,7 +147,7 @@
 			</RoundedButton>
 		</OnboardingStep>
 
-		<OnboardingStep bind:step idx={2} title="Download your ServiceAccount">
+		<OnboardingStep bind:step idx={2} title="Download your Service Account File">
 			<p>
 				Visit your Firebase project's <a
 					class="text-blue-500 underline"
@@ -148,6 +162,7 @@
 			<br />
 			<p>This will download a .json file. We will need this in the next step</p>
 
+			<br />
 			<RoundedButton greenBlack on:click={() => step++}>
 				<Icon icon="mdi:tick" />
 				Done
