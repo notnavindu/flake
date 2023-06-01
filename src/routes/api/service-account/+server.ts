@@ -2,6 +2,9 @@ import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
 import { HostFirebaseAdmin, decodeToken } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { AES } from 'crypto-js';
+import { AES_KEY } from '$env/static/private';
+import { serviceAccountKeys } from '$lib/constants/validator.const';
 
 export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	const decodedToken = await decodeToken(cookies.get('token') || '');
@@ -14,7 +17,11 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 
 	const serviceAccount = body.account;
 
-	// TODO: validate servide acc
+	const isValid = serviceAccountKeys.every((key) => serviceAccount[key]?.length > 0);
+
+	if (!isValid) {
+		throw error(400, 'Required fields missing from service account');
+	}
 
 	try {
 		const clientApp = new FirebaseAdminBase(serviceAccount.project_id, serviceAccount);
@@ -24,14 +31,12 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 
 		await clientApp.deleteInstance();
 
-		// TODO: Encrypt with AES
+		const encryptedServiceAccount = AES.encrypt(JSON.stringify(serviceAccount), AES_KEY).toString();
+
 		await Promise.all([
-			HostFirebaseAdmin.firestore
-				.collection('service-accounts')
-				.doc(`${uid}`)
-				.set({
-					serviceAccount: JSON.stringify(serviceAccount)
-				}),
+			HostFirebaseAdmin.firestore.collection('service-accounts').doc(`${uid}`).set({
+				serviceAccount: encryptedServiceAccount
+			}),
 
 			HostFirebaseAdmin.firestore.collection('users').doc(`${uid}`).set({
 				projectId: serviceAccount.project_id

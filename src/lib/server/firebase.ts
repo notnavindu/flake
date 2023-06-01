@@ -1,5 +1,7 @@
-import { FIREBASE_SERVER_CONFIG } from '$env/static/private';
+import { AES_KEY, FIREBASE_SERVER_CONFIG } from '$env/static/private';
 import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
+import { AES } from 'crypto-js';
+import Utf8 from 'crypto-js/enc-utf8';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 
@@ -18,7 +20,9 @@ export async function initializeCustomFirebaseAppOfUser(uid: string) {
 		await getFirestore(HostFirebaseAdmin.app).collection('service-accounts').doc(uid).get()
 	).data() as { serviceAccount: string };
 
-	const serviceAccountParsed = JSON.parse(serviceAccount);
+	const serviceAccountDecrypted = AES.decrypt(serviceAccount, AES_KEY).toString(Utf8);
+
+	const serviceAccountParsed = JSON.parse(serviceAccountDecrypted);
 
 	return new FirebaseAdminBase(serviceAccountParsed.project_id, serviceAccountParsed);
 }

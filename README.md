@@ -2,7 +2,7 @@
 
 🚧 Under construction.
 
-A self-hostable loom clone.
+A self-hostable loom clone. This project is under development and might (intentionally ofc.) filled with bugs
 
 ## Features
 

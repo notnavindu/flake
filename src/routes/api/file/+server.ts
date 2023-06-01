@@ -5,8 +5,6 @@ import {
 } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
 import dayjs from 'dayjs';
-import admin from 'firebase-admin';
-import { getFirestore } from 'firebase-admin/firestore';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, cookies, url }) => {
@@ -27,7 +25,8 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 
 	// TODO: @Nav: check size & mime type
 	const size = rawFile.size / 1024 / 1024;
-	console.log('size ==>', size, 'MB');
+	const mimeType = rawFile.type;
+	console.log('Typee', mimeType);
 
 	if (size > 30) {
 		throw error(400, 'Size cannot be larger than 30MB');
