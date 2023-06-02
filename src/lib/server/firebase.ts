@@ -1,6 +1,6 @@
 import { AES_KEY, FIREBASE_SERVER_CONFIG } from '$env/static/private';
 import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
-import { AES } from 'crypto-js';
+import AES from 'crypto-js/aes';
 import Utf8 from 'crypto-js/enc-utf8';
 import { getFirestore } from 'firebase-admin/firestore';
 import type { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';

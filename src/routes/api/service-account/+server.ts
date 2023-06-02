@@ -2,7 +2,7 @@ import { FirebaseAdminBase } from '$lib/models/FirebaseAdminBase';
 import { HostFirebaseAdmin, decodeToken } from '$lib/server/firebase';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { AES } from 'crypto-js';
+import AES from 'crypto-js/aes';
 import { AES_KEY } from '$env/static/private';
 import { serviceAccountKeys } from '$lib/constants/validator.const';
 
