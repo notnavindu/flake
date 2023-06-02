@@ -4,7 +4,7 @@ steps:
     args:
       [
         '-c',
-        'pack build $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --builder=gcr.io/buildpacks/builder:v1 --network=cloudbuild --path=.  --env=FIREBASE_SERVER_CONFIG --env=PUBLIC_API_KEY --env=PUBLIC_AUTH_DOMAIN --env=PUBLIC_PROJECT_ID --env=PUBLIC_STORAGE_BUCKET --env=PUBLIC_MESSAGE_SENDER_ID --env=PUBLIC_APP_ID'
+        'pack build $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA --builder=gcr.io/buildpacks/builder:v1 --network=cloudbuild --path=.  --env=FIREBASE_SERVER_CONFIG --env=PUBLIC_API_KEY --env=PUBLIC_AUTH_DOMAIN --env=PUBLIC_PROJECT_ID --env=PUBLIC_STORAGE_BUCKET --env=PUBLIC_MESSAGE_SENDER_ID --env=PUBLIC_APP_ID --env=AES_KEY'
       ]
     secretEnv:
       [
@@ -14,7 +14,8 @@ steps:
         'PUBLIC_PROJECT_ID',
         'PUBLIC_STORAGE_BUCKET',
         'PUBLIC_MESSAGE_SENDER_ID',
-        'PUBLIC_APP_ID'
+        'PUBLIC_APP_ID',
+        'AES_KEY'
       ]
   - name: 'gcr.io/cloud-builders/docker'
     args:
@@ -53,3 +54,5 @@ availableSecrets:
       env: 'PUBLIC_MESSAGE_SENDER_ID'
     - versionName: projects/482632270682/secrets/PUBLIC_APP_ID/versions/latest
       env: 'PUBLIC_APP_ID'
+    - versionName: projects/482632270682/secrets/AES_KEY/versions/latest
+      env: 'AES_KEY'
